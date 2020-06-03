@@ -1,10 +1,10 @@
-# kroll2020_F0knockout
+# test
 Data and scripts of preprint Kroll et al., 2020 – F0 knockout method
 
 # about Illumina MiSeq analysis
 
 AmpliCan requires fastq files as input, but I found that filtering my reads prior so I only use high-quality reads really improved the results.
-As it is easier to filter reads on the .bam aligment file (eg. based on 
+As it is easier to filter reads on the .bam aligment file (eg. based on
 
 ## 1. Alignment + Filtering + Conversion
 
@@ -17,6 +17,6 @@ So you can run the Shell (.command) script:
 
     chmod u+x ~/.../alignFilterBackSingle.command
 
-Then, for example for sample 
+Then, for example for sample
 
     alignFilterBack

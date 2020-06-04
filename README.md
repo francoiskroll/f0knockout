@@ -2,7 +2,7 @@
 
 Data and code for preprint
 
-Kroll, F. _et al._ 2020. A simple and effective F0 knockout method for rapid screening of behaviour and other complex phenotypes.
+Kroll F et al. 2020. A simple and effective F0 knockout method for rapid screening of behaviour and other complex phenotypes.
 
 IN PROGRESS
 

@@ -10,7 +10,7 @@ I am currently uploading data and code!
 
 ---
 
-Please feel free to contact me for questions
+Feel free to contact me for questions
 
   * [![alt text][1.2]][1] [@francois_kroll](https://twitter.com/francois_kroll)
 

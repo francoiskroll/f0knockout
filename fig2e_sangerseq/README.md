@@ -2,11 +2,11 @@
 
 Reference sequences annotated in Benchling:
 
-amp1_inj1: https://benchling.com/s/seq-iz1DfdU1LfBrF5fwxJi6
-amp1_inj2: https://benchling.com/s/seq-DRs9pDl73oUDm28Gl5PT
-amp2_inj1: https://benchling.com/s/seq-ZoQagJBCbpuZY6T3IxI5
-amp2_inj2: https://benchling.com/s/seq-QHAoBwyNqtGrocf2H8Cj
-amp3_inj1: https://benchling.com/s/seq-QHAoBwyNqtGrocf2H8Cj
+amp1_inj1: https://benchling.com/s/seq-iz1DfdU1LfBrF5fwxJi6 <br>
+amp1_inj2: https://benchling.com/s/seq-DRs9pDl73oUDm28Gl5PT <br>
+amp2_inj1: https://benchling.com/s/seq-ZoQagJBCbpuZY6T3IxI5 <br>
+amp2_inj2: https://benchling.com/s/seq-QHAoBwyNqtGrocf2H8Cj <br>
+amp3_inj1: https://benchling.com/s/seq-QHAoBwyNqtGrocf2H8Cj <br>
 
 ---
 

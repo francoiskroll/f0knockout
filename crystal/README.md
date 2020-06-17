@@ -9,6 +9,14 @@ ___
 
 Refers to Figure 4C, Video 1, Video 2.
 
+Files <br />
+* *eyestack_original.tif*
+* *headstack_original.tif* <br />
+
+can be found at the Zenodo version of this repository:
+
+https://doi.org/10.5281/zenodo.3898916
+
 ## Two-photon head stack
 
 Original stack from two-photon microscope is *headstack_original.tif*.

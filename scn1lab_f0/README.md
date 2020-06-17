@@ -9,6 +9,18 @@ https://doi.org/10.1101/2020.06.04.133462
 
 ___
 
+Files <br />
+* *190813_06_07.XLS*
+* *190813_06_07.zip*
+* *190813_06_DATA.mat*
+* *190813_06_deltapxsecsmooth.csv*
+* *190813_07_DATA.mat*
+* *190813_07_deltapxsecsmooth.csv <br />*
+
+can be found at the Zenodo version of this repository (too heavy for GitHub):
+
+https://doi.org/10.5281/zenodo.3898916
+
 See Materials and Methods/Behavioural data analysis.
 
 *190813_06_07.zip*: the thousands of xls files after raw file Export from ZebraLab (see *trpa1b* mustard oil assay README).

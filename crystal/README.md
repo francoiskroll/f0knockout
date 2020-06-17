@@ -15,7 +15,7 @@ Files <br />
 
 can be found at the Zenodo version of this repository:
 
-https://doi.org/10.5281/zenodo.3898916 <br />
+https://doi.org/10.5281/zenodo.3898916
 
 ## two-photon head stack
 

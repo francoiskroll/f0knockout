@@ -9,6 +9,15 @@ https://doi.org/10.1101/2020.06.04.133462
 
 ___
 
+Files <br />
+* *190314_rawoutput.zip*
+* *140218_34_DATA.mat*
+* *140218_34_deltapxsecsmooth.csv* <br />
+
+can be found at the Zenodo version of this repository (too heavy for GitHub):
+
+https://doi.org/10.5281/zenodo.3898916
+
 Analysis follows the same steps as README in folder *scn1lab_f0*.
 
 ---

@@ -8,6 +8,9 @@ https://www.biorxiv.org/content/10.1101/2020.06.04.133462v1
 
 If you use some of the data or code, please cite the preprint!
 
+Note: some of the larger files are missing from this repository as they are too big for GitHub.
+Please find on them on the Zenodo version of the repository: XXX
+
 ___
 
 Get in touch for questions

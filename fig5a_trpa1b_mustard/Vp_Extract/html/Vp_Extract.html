@@ -1,0 +1,1868 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Vp_Extract</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-10-22"><meta name="DC.source" content="Vp_Extract.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Info</a></li><li><a href="#3">Assumptions</a></li><li><a href="#4">Dependencies</a></li><li><a href="#5">Options</a></li><li><a href="#6">Notes on Options</a></li><li><a href="#7">Selecting Files</a></li><li><a href="#8">Load Data from Excel Sheets</a></li><li><a href="#9">Checking for Persistant Ordering Errors</a></li><li><a href="#10">Reshape The Data</a></li><li><a href="#11">Add in time</a></li><li><a href="#12">Organise the data</a></li><li><a href="#13">Remove "Noise" - set values to zero</a></li><li><a href="#14">Group the data by condition</a></li><li><a href="#15">Extract Parameters from Data (&lt; Re-shaped data)</a></li><li><a href="#16">Statistics &amp; Plots - Variables</a></li><li><a href="#17">Parameters - Generating Averages (in frames)</a></li><li><a href="#18">Smoothing data into seconds</a></li><li><a href="#19">Save WorkSpace</a></li></ul></div><pre class="codeinput"><span class="comment">% Vp_Extract</span>
+
+<span class="comment">% marcus.ghosh.11@ucl.ac.uk</span>
+</pre><h2 id="2">Info</h2><pre class="codeinput"><span class="comment">% Extracts data from Viewpoint files with data for every frame</span>
+
+<span class="comment">% Input</span>
+    <span class="comment">% Excel Sheets - output from re-running a viewpoint file</span>
+        <span class="comment">% Each with:</span>
+        <span class="comment">% Rows - every frame for every animal</span>
+        <span class="comment">% Columns including:</span>
+            <span class="comment">% Type - data (101) or errors (~=101)</span>
+            <span class="comment">% Location - which animal each data point came from</span>
+            <span class="comment">% Data - pixels changed that frame</span>
+    <span class="comment">% Perl Batch data file (txt) - ouput from running Pearl_Batch_192.m</span>
+    <span class="comment">% Genotype list (txt):</span>
+        <span class="comment">% Columns - group names</span>
+        <span class="comment">% Rows - ROI ID's assigning each fish to a group</span>
+
+<span class="comment">% Output</span>
+    <span class="comment">% Data structures that can be fed into Vp_Analyse.m</span>
+    <span class="comment">% Note that sleep_cells will contain NaN values if the fish water was topped up</span>
+</pre><h2 id="3">Assumptions</h2><pre class="codeinput"><span class="comment">% Data comes from 192 regions of interest (ROIS)</span>
+<span class="comment">% Experiments start during the day</span>
+<span class="comment">% Days are 14hours long, nights are 10hours long</span>
+</pre><h2 id="4">Dependencies</h2><pre class="codeinput"><span class="comment">% Files</span>
+    <span class="comment">% dir2</span>
+        <span class="comment">% https://github.com/ghoshm/Utilities/blob/master/dir2.m</span>
+
+    <span class="comment">% lbmap</span>
+        <span class="comment">%https://uk.mathworks.com/matlabcentral/fileexchange/17555-light-bartlein-color-maps</span>
+
+    <span class="comment">% Nat Sort Files</span>
+        <span class="comment">%http://uk.mathworks.com/matlabcentral/fileexchange/47434-natural-order-filename-sort</span>
+
+    <span class="comment">% ProgressBar</span>
+        <span class="comment">%http://uk.mathworks.com/matlabcentral/fileexchange/6922-progressbar</span>
+
+<span class="comment">% MATLAB Products</span>
+    <span class="comment">% Statistics and Machine Learning Toolbox</span>
+    <span class="comment">% Curve Fitting Toolbox</span>
+    <span class="comment">% Parallel Computing Toolbox</span>
+    <span class="comment">% MATLAB Distributed Computing Server # I installed the Amazon Services</span>
+    <span class="comment">% one?</span>
+</pre><h2 id="5">Options</h2><p>For *'s see "Notes on Options" below</p><pre class="codeinput"><span class="comment">% General</span>
+lines_per_sheet = 50000; <span class="comment">% Specify the number of data points per Excel sheet</span>
+box = 1; <span class="comment">% set which of the two boxes you want to use (*)</span>
+threshold = 200; <span class="comment">% Maximum delta px value (**)</span>
+top_up = [2 4]; <span class="comment">% alter to light boundaries where you topped up fish water.</span>
+    <span class="comment">% E.g. Day 2 and 3 (top_up = [2 4]).</span>
+    <span class="comment">% E.g. Not topped up (top_up = []).</span>
+top_up_threshold = 8; <span class="comment">% threshold for cropping data where water was topped up (***)</span>
+time_bins = 60*15; <span class="comment">% Choose plot smoothing (from seconds)</span>
+days = [1 2 3 4]; <span class="comment">% number of days</span>
+nights = [1 2 3]; <span class="comment">% number of nights</span>
+
+<span class="comment">% Colors</span>
+col = <span class="string">'RedBlue'</span>; <span class="comment">% (****)</span>
+night_color = [0.9608 0.9608 0.9608]; <span class="comment">% color of night shading</span>
+</pre><h2 id="6">Notes on Options</h2><pre class="codeinput"><span class="comment">%* at this point its easier to run each seperatly then merge</span>
+    <span class="comment">% the data later using Vp_Analyse</span>
+
+<span class="comment">% ** A hard threshold is a simple solution, though removing whole bouts</span>
+    <span class="comment">% including these values is best as it avoids leaving "cut bouts"</span>
+    <span class="comment">% From my 3 WT experiments (with lids so no hands), the maximum value I</span>
+    <span class="comment">% Observe is 165px.</span>
+    <span class="comment">% From a PTZ Dose response (you may expect higher values) the data</span>
+    <span class="comment">% doesn't exceed this</span>
+    <span class="comment">% From looking @ 6 Hcrt experiments and the PTZ experiment - data(data &gt; 0)</span>
+    <span class="comment">% prctile and std, there is no obvious flexible cut off that could be used.</span>
+
+<span class="comment">% *** Again a hard coded threshold is a simple solution.</span>
+    <span class="comment">% So far experiments @ 25Hz work with 10</span>
+    <span class="comment">% experiments @ 15Hz work with 8</span>
+
+<span class="comment">% **** Choice of</span>
+    <span class="comment">% 'Blue'       Single-hue progression to purlish-blue (default)</span>
+    <span class="comment">% 'BlueGray'   Diverging progression from blue to gray</span>
+    <span class="comment">% 'BrownBlue'  Orange-white-purple diverging scheme</span>
+    <span class="comment">% 'RedBlue'    Modified spectral scheme</span>
+</pre><h2 id="7">Selecting Files</h2><pre class="codeinput"><span class="comment">% Select a folder of Excel Sheet</span>
+disp (<span class="string">'&gt;Folder with Excel files?'</span>)
+folder_path = uigetdir([],<span class="string">'Select a folder of Excel sheets'</span>); <span class="comment">% Choose your experiment</span>
+folder_open = dir2(folder_path); <span class="comment">% Open this folder</span>
+disp(horzcat(<span class="string">'Running File '</span>,folder_path)); <span class="comment">% Report file choice</span>
+
+<span class="comment">% Select a geno_list</span>
+disp(<span class="string">'&gt;Metadata file?'</span>)
+[filename, pathname] = uigetfile(<span class="string">'*.txt'</span>, <span class="string">'Select a Genotype List'</span>); <span class="comment">% Select a geno file</span>
+<span class="keyword">if</span> isequal(filename,0) <span class="comment">% If no file is selected</span>
+    error(<span class="string">'No File Selected'</span>) <span class="comment">% Show Error</span>
+<span class="keyword">else</span> <span class="comment">%If selected</span>
+    disp([<span class="string">'User selected '</span>, fullfile(pathname, filename)]) <span class="comment">% Show selected filename</span>
+<span class="keyword">end</span>
+geno_list = importdata(strcat(pathname,filename),<span class="string">'\t'</span>,2); <span class="comment">% Load genolist</span>
+
+clear <span class="string">filename</span> <span class="string">pathname</span>
+
+<span class="comment">% Select a Perl Batch Data File</span>
+disp (<span class="string">'&gt;Data file from perl_batch_192?'</span>)
+[filename, pathname] = uigetfile(<span class="string">'*.txt'</span>,<span class="keyword">...</span>
+    <span class="string">'Select a Perl Batch Output (DATA) File'</span>); <span class="comment">% Select a geno file</span>
+<span class="keyword">if</span> isequal(filename,0) <span class="comment">% If no file is selected</span>
+    error(<span class="string">'No Data File Selected'</span>) <span class="comment">% Show Error</span>
+<span class="keyword">else</span> <span class="comment">%If selected</span>
+    disp([<span class="string">'User selected '</span>, fullfile(pathname, filename)]) <span class="comment">% Show selected filename</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Select a save path</span>
+disp (<span class="string">'&gt;Save output?'</span>)
+save_pathname = uigetdir([],<span class="string">'Select a save location'</span>);
+[~,save_name,~] = fileparts(filename); <span class="comment">% assign file name for save</span>
+disp([<span class="string">'Save path '</span>,save_pathname]); <span class="comment">% report</span>
+</pre><pre class="codeoutput">&gt;Folder with Excel files?
+Running File /Users/francoiskroll/Dropbox
+&gt;Metadata file?
+</pre><pre class="codeoutput error">Error using Vp_Extract (line 108)
+No File Selected
+</pre><h2 id="8">Load Data from Excel Sheets</h2><pre class="codeinput">tic
+<span class="comment">% Pre-allocation</span>
+time = nan(size(folder_open,1)*lines_per_sheet,1,<span class="string">'single'</span>); <span class="comment">% time {1}</span>
+<span class="comment">%pause(30); % Wait for memory</span>
+data_type = nan(size(folder_open,1)*lines_per_sheet,1,<span class="string">'single'</span>); <span class="comment">% Data type {2}</span>
+<span class="comment">%pause(30); % Wait for memory</span>
+fish_id = nan(size(folder_open,1)*lines_per_sheet,1,<span class="string">'single'</span>); <span class="comment">% Fish id {3}</span>
+<span class="comment">%pause(30); % Wait for memory</span>
+delta_px = nan(size(folder_open,1)*lines_per_sheet,1,<span class="string">'single'</span>); <span class="comment">% Delta px {4}</span>
+<span class="comment">%pause(30); % Wait for memory</span>
+sheet_names = cell(size(folder_open,1),1); <span class="comment">% Excel sheet names</span>
+
+<span class="comment">% Ordering by File Name</span>
+<span class="keyword">for</span> f = 1:size(folder_open,1) <span class="comment">% For each excel file</span>
+    sheet_names{f} = folder_open(f).name; <span class="comment">% Take it's name</span>
+<span class="keyword">end</span> <span class="comment">% Note that these will be in "computer" order</span>
+    <span class="comment">% Ie. 1-10, 100, 1000 etc</span>
+
+[~,O] = natsortfiles(sheet_names); <span class="comment">% Use natsortfiles to sort by file name</span>
+    clear <span class="string">sheet_names</span>; <span class="comment">% Clear Sheet names</span>
+
+a = 1; <span class="comment">% Start a counter</span>
+progress = 0; <span class="comment">% Start a timer</span>
+data_type_errors = 0; <span class="comment">% Start a counter</span>
+order_errors = 0; <span class="comment">% Start a counter</span>
+order_errors_size = []; <span class="comment">% pre-allocate an empty vector</span>
+progressbar(<span class="string">'Files'</span>) <span class="comment">%Initialise progress bars</span>
+<span class="keyword">for</span> f = O' <span class="comment">% For each Excel file</span>
+
+    <span class="comment">% Load data</span>
+        <span class="comment">% Raw data structure</span>
+            <span class="comment">% 1 - Time</span>
+            <span class="comment">% 2 - Data type</span>
+            <span class="comment">% 3 - Fish ID</span>
+            <span class="comment">% 4 - Delta px</span>
+    fid = fopen(strcat(folder_path,<span class="string">'/'</span>,folder_open(f).name)); <span class="comment">% Open it % FK ! I changed \ to /</span>
+    <span class="keyword">if</span> f == O(1) <span class="comment">% For the first file Skip the first blank lines</span>
+        raw_text = textscan(fid,<span class="keyword">...</span><span class="comment"> % Read in the data</span>
+            <span class="string">'%*f32 %f32 %*f32 %f32 %*1s %s %f32'</span>,<span class="string">'headerlines'</span>,192 + 1);
+    <span class="keyword">else</span> <span class="comment">% For the rest of the files</span>
+        raw_text = textscan(fid,<span class="keyword">...</span><span class="comment"> % Read in the data</span>
+            <span class="string">'%*f32 %f32 %*f32 %f32 %*1s %s %f32'</span>,<span class="string">'headerlines'</span>,1);
+    <span class="keyword">end</span>
+
+    <span class="comment">% Error Handling</span>
+
+    <span class="comment">% Dealing with data_type errors (e)</span>
+        <span class="comment">% Note that this includes cropping the end of the experiment off</span>
+    found = find(raw_text{2} ~= 101); <span class="comment">% Find errors</span>
+    <span class="keyword">if</span> isempty(found) ~= 1 <span class="comment">% If there are errors</span>
+        <span class="keyword">for</span> e = 1:size(raw_text,2) <span class="comment">% For each data type being imported</span>
+            raw_text{e}(found) = []; <span class="comment">% Remove errors</span>
+        <span class="keyword">end</span>
+        data_type_errors = data_type_errors + 1; <span class="comment">% Add to error counter</span>
+    <span class="keyword">end</span>
+    clear <span class="string">found</span>;
+
+    <span class="comment">% Dealing with ordering errors</span>
+    fish_id_order = str2num(char(raw_text{3})); <span class="comment">% Convert str to num</span>
+    fish_id_order_check = diff(fish_id_order); <span class="comment">% Diff these values</span>
+    found = find(fish_id_order_check ~= 1 &amp; fish_id_order_check ~= -191 &amp;<span class="keyword">...</span>
+        isnan(fish_id_order_check) == 0,1,<span class="string">'first'</span>); <span class="comment">% Find the first frame drops</span>
+
+    <span class="keyword">while</span> isempty(found) == 0 <span class="comment">% While there are dropped frames</span>
+
+        <span class="comment">% Use a sliding window to find where the pattern normalises</span>
+        <span class="comment">% Cut backwards</span>
+        found_clip_b = [191 1];
+        <span class="keyword">if</span> found - found_clip_b(1) &lt; 1
+            found_clip_b = [found + 1 found + 1];
+        <span class="keyword">else</span>
+            <span class="keyword">while</span> sum(fish_id_order_check(found - found_clip_b(1):found - found_clip_b(2))) ~= 191
+                found_clip_b = found_clip_b + 1; <span class="comment">% Slide window</span>
+
+                <span class="comment">% Catch Running past the start of the file exception</span>
+                <span class="keyword">if</span> found - found_clip_b(1) &lt; 1
+                    found_clip_b = [found_clip_b(1) + 1 found_clip_b(1) + 1];
+                    <span class="keyword">break</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        <span class="comment">% Cut forwards</span>
+        found_clip_f = [1 191];
+        <span class="keyword">if</span> found + found_clip_f(2) &gt; length(fish_id_order_check)
+            found_clip_f = [length(fish_id_order_check) - found + 2 <span class="keyword">...</span>
+                length(fish_id_order_check) - found + 2];
+        <span class="keyword">else</span>
+            <span class="keyword">while</span> sum(fish_id_order_check(found + found_clip_f(1):found + found_clip_f(2))) ~= 191
+                found_clip_f = found_clip_f + 1; <span class="comment">% Slide window</span>
+
+                <span class="comment">% Catch Running past the end of the file exception</span>
+                <span class="keyword">if</span> found + found_clip_f(2) &gt; length(fish_id_order_check)
+                    found_clip_f = [found_clip_f(2)+1 found_clip_f(2)+1];
+                    <span class="keyword">break</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        <span class="comment">% Now set values between these sections to NaN</span>
+        fish_id_order(found - found_clip_b(2)+2:found + found_clip_f(1)-1) = NaN;
+        order_errors_size(order_errors+1,1) = <span class="keyword">...</span>
+            size(found - found_clip_b(2)+2:found + found_clip_f(1)-1,2);
+            <span class="comment">% Store the size of the removed data</span>
+        clear <span class="string">found_clip_b</span> <span class="string">found_clip_f</span>
+
+        fish_id_order_check = diff(fish_id_order); <span class="comment">% Diff the new fish order</span>
+        found = find(fish_id_order_check ~= 1 &amp; fish_id_order_check ~= -191 &amp;<span class="keyword">...</span>
+            isnan(fish_id_order_check) == 0,1,<span class="string">'first'</span>); <span class="comment">% Find other frame drops</span>
+        order_errors = order_errors + 1; <span class="comment">% Add to the order errors counter</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% Data Storage</span>
+    <span class="keyword">if</span> a == 1 <span class="comment">% For the first file</span>
+        time(a:size(raw_text{1},1),1) = raw_text{1}; <span class="comment">% Time</span>
+        data_type(a:size(raw_text{1},1),1) = raw_text{2}; <span class="comment">% Data Type</span>
+        fish_id(a:size(raw_text{1},1),1) = fish_id_order; <span class="comment">% Fish Id order</span>
+        delta_px(a:size(raw_text{1},1),1) = raw_text{4}; <span class="comment">% Delta px</span>
+            a = a + size(raw_text{1},1); <span class="comment">% Add to counter</span>
+    <span class="keyword">else</span> <span class="comment">% For all other files</span>
+        time(a:a+size(raw_text{1},1)-1,1) = raw_text{1}; <span class="comment">% Time</span>
+        data_type(a:a+size(raw_text{1},1)-1,1) = raw_text{2}; <span class="comment">% Data Type</span>
+        fish_id(a:a+size(raw_text{1},1)-1,1) = fish_id_order; <span class="comment">% Fish Id order</span>
+        delta_px(a:a+size(raw_text{1},1)-1,1) = raw_text{4}; <span class="comment">% Delta px</span>
+            a = a + size(raw_text{1},1); <span class="comment">% Add to counter</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% Clean up</span>
+    fclose(fid); clear <span class="string">fish_id_order</span> <span class="string">fish_id_order_check</span> <span class="string">found</span> <span class="string">raw_text</span>; <span class="comment">% Clear variables</span>
+
+    progress = progress + 1; <span class="comment">% Add to timer</span>
+    progressbar(progress/size(folder_open,1)); <span class="comment">%Update the Fish progressbar</span>
+
+<span class="keyword">end</span>
+disp(<span class="string">'Time taken to load data from Excel sheets'</span>); <span class="comment">% report progress</span>
+toc
+
+<span class="comment">% Report back on errors</span>
+disp(horzcat(num2str(data_type_errors),<span class="string">' Files with Data Type Errors'</span>));
+disp(horzcat(num2str(order_errors),<span class="string">' Order Errors'</span>));
+<span class="keyword">for</span> e = 1:size(order_errors_size,1) <span class="comment">% For each order error</span>
+    disp(horzcat(<span class="string">'Order Error '</span>,num2str(e),<span class="string">' Size = '</span>,num2str(order_errors_size(e))));
+<span class="keyword">end</span>
+disp(horzcat(<span class="string">'Ran File '</span>,folder_path)); <span class="comment">% Report file choice</span>
+
+clear <span class="string">a</span> <span class="string">e</span> <span class="string">ans</span> <span class="string">data_type</span> <span class="string">data_type_errors</span> <span class="string">f</span> <span class="string">fid</span> <span class="string">folder_open</span> <span class="string">folder_path</span> <span class="keyword">...</span>
+    <span class="string">lines_per_sheet</span> <span class="string">O</span> <span class="string">order_errors</span> <span class="string">order_errors_size</span> <span class="string">progress</span>
+</pre><h2 id="9">Checking for Persistant Ordering Errors</h2><p>At this point only one type of ordering error will remain This will be the rare case where the ordering error bridges two Excel sheets E.g. 171030_16</p><pre class="codeinput"><span class="comment">% Check for remaining Errors</span>
+scrap = diff(isnan(fish_id));
+<span class="comment">% This will leave either</span>
+<span class="comment">% +1 (A number to a NaN)</span>
+<span class="comment">% -1 (A NaN to a number)</span>
+<span class="comment">% 0 (number to number)</span>
+
+<span class="comment">% Check for Backwards errors</span>
+check(:,1) = find(scrap == 1); <span class="comment">% Locs</span>
+check(:,2) = fish_id(scrap == 1); <span class="comment">% Values (should all be 192)</span>
+
+<span class="keyword">if</span> isempty(find(check(:,2) ~= 192)) == 0 <span class="comment">% If there are errors</span>
+    err = find(check(:,2) ~= 192); <span class="comment">% define them</span>
+    fish_id_diff = diff(fish_id); <span class="comment">% diff fish_id</span>
+
+    <span class="keyword">for</span> e = 1:size(err,1) <span class="comment">% for each error</span>
+
+        <span class="comment">% Use a sliding window to find where the pattern normalises</span>
+        <span class="comment">% Cut backwards</span>
+        found = check(err(e,1),1); <span class="comment">% set the error location</span>
+        found_clip_b = [191 1];
+        <span class="keyword">if</span> found - found_clip_b(1) &lt; 1
+            found_clip_b = [found + 1 found + 1];
+        <span class="keyword">else</span>
+            <span class="keyword">while</span> sum(fish_id_diff(found - found_clip_b(1):found - found_clip_b(2))) ~= 191
+                found_clip_b = found_clip_b + 1; <span class="comment">% Slide window</span>
+
+                <span class="comment">% Catch Running past the start of the file exception</span>
+                <span class="keyword">if</span> found - found_clip_b(1) &lt; 1
+                    found_clip_b = [found_clip_b(1) + 1 found_clip_b(1) + 1];
+                    <span class="keyword">break</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        fish_id(found - found_clip_b(2)+2:found) = NaN;
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+clear <span class="string">check</span> <span class="string">err</span> <span class="string">e</span> <span class="string">found</span> <span class="string">found_clip_b</span> <span class="string">fish_id_diff</span>
+
+<span class="comment">% Check for forwards errors</span>
+check(:,1) = find(scrap == -1) + 1;
+check(:,2) = fish_id(find(scrap == -1)+1);
+
+<span class="keyword">if</span> isempty(find(check(:,2) ~= 1)) == 0 <span class="comment">% If there are errors</span>
+    err = find(check(:,2) ~= 1); <span class="comment">% define them</span>
+    fish_id_diff = diff(fish_id); <span class="comment">% diff fish_id</span>
+
+    <span class="keyword">for</span> e = 1:size(err,1) <span class="comment">% for each error</span>
+
+        <span class="comment">% Cut forwards</span>
+        found = check(err(e,1),1); <span class="comment">% set the error location</span>
+        found_clip_f = [1 191];
+        <span class="keyword">if</span> found + found_clip_f(2) &gt; length(fish_id_diff)
+            found_clip_f = [length(fish_id_diff) - found + 2 <span class="keyword">...</span>
+                length(fish_id_diff) - found + 2];
+        <span class="keyword">else</span>
+            <span class="keyword">while</span> sum(fish_id_diff(found + found_clip_f(1):found + found_clip_f(2))) ~= 191
+                found_clip_f = found_clip_f + 1; <span class="comment">% Slide window</span>
+
+                <span class="comment">% Catch Running past the end of the file exception</span>
+                <span class="keyword">if</span> found + found_clip_f(2) &gt; length(fish_id_diff)
+                    found_clip_f = [found_clip_f(2)+1 found_clip_f(2)+1];
+                    <span class="keyword">break</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        fish_id(found:found + found_clip_f(1)-1) = NaN;
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+clear <span class="string">check</span> <span class="string">err</span> <span class="string">fish_id_diff</span> <span class="string">e</span> <span class="string">found</span> <span class="string">found_clip_f</span> <span class="string">fish_id_diff</span> <span class="string">scrap</span>
+
+disp(<span class="string">'Found &amp; Corrected Persistant Ordering Errors'</span>); <span class="comment">% Report</span>
+</pre><h2 id="10">Reshape The Data</h2><pre class="codeinput"><span class="comment">% Check that the tracking start's with fish 1</span>
+<span class="keyword">if</span> fish_id(1) ~= 1 <span class="comment">% if not</span>
+   crop = find(fish_id == 1,1,<span class="string">'first'</span>) - 1; <span class="comment">% find just before fish 1</span>
+   <span class="comment">% Crop all of the data</span>
+       delta_px(1:crop) = [];
+       fish_id(1:crop) = [];
+       time(1:crop) = [];
+   clear <span class="string">crop</span>;
+<span class="keyword">end</span>
+
+<span class="comment">% Check the number of frames per fish is correct</span>
+frames_per_fish = zeros(1,max(fish_id));
+<span class="keyword">for</span> f = 1:max(fish_id) <span class="comment">% For each fish</span>
+    clear <span class="string">found</span>;
+    found = find(fish_id == f); <span class="comment">% Find it's data points</span>
+    frames_per_fish(f) = size(found,1); <span class="comment">% Store number of frames</span>
+    disp(horzcat(<span class="string">'Found frames for fish Number '</span>,num2str(f),<span class="string">' of '</span>,<span class="keyword">...</span>
+        num2str(max(fish_id)))); <span class="comment">% Report on progress</span>
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> min(frames_per_fish) ~= max(frames_per_fish) <span class="comment">% If the number of frames is not equal</span>
+   error(<span class="string">'Data formatted Incorrectly'</span>); <span class="comment">% Call an error</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Delta px sq</span>
+<span class="keyword">for</span> f = 1:max(fish_id) <span class="comment">% For each fish</span>
+    clear <span class="string">found</span>;
+    found = find(fish_id == f); <span class="comment">% Find it's data points</span>
+
+    <span class="keyword">if</span> f == 1 <span class="comment">% For the first fish</span>
+        delta_px_sq = nan(frames_per_fish(1),max(fish_id),<span class="string">'single'</span>);
+        <span class="comment">% Pre-allocate</span>
+    <span class="keyword">end</span>
+
+    delta_px_sq(:,f) = delta_px(found); <span class="comment">% Take delta_px values</span>
+    disp(horzcat(<span class="string">'Collected frames for fish '</span>,num2str(f),<span class="keyword">...</span>
+        <span class="string">' of '</span>,num2str(max(fish_id)))); <span class="comment">% Report on progress</span>
+<span class="keyword">end</span>
+clear <span class="string">f</span> <span class="string">found</span> <span class="string">delta_px</span>
+
+<span class="comment">% Time sq</span>
+    <span class="comment">% Note this is separated from delta px sq for ease of memory handling</span>
+<span class="keyword">for</span> f = 1:max(fish_id) <span class="comment">% For each fish</span>
+    clear <span class="string">found</span>;
+    found = find(fish_id == f); <span class="comment">% Find it's data points</span>
+
+    <span class="keyword">if</span> f == 1 <span class="comment">% For the first fish</span>
+        time_sq = nan(frames_per_fish(1),max(fish_id),<span class="string">'single'</span>);
+        <span class="comment">% Pre-allocate</span>
+    <span class="keyword">end</span>
+
+    time_sq(:,f) = time(found); <span class="comment">% Take time values</span>
+    disp(horzcat(<span class="string">'Collected time for fish '</span>,num2str(f),<span class="keyword">...</span>
+        <span class="string">' of '</span>,num2str(max(fish_id)))); <span class="comment">% Report on progress</span>
+<span class="keyword">end</span>
+clear <span class="string">f</span> <span class="string">found</span> <span class="string">time</span> <span class="string">fish_id</span> <span class="string">frames_per_fish</span>
+</pre><h2 id="11">Add in time</h2><pre class="codeinput">fid = fopen(strcat(pathname,filename)); <span class="comment">% Open time data</span>
+formatSpec = <span class="string">'%*884s%f%[^\n\r]'</span>;
+dataArray = textscan(fid, formatSpec, 3-3+1, <span class="string">'Delimiter'</span>,<span class="keyword">...</span>
+    <span class="string">''</span>, <span class="string">'WhiteSpace'</span>, <span class="string">''</span>, <span class="string">'HeaderLines'</span>, 2, <span class="string">'ReturnOnError'</span>, false, <span class="string">'EndOfLine'</span>, <span class="string">'\r\n'</span>);
+start_time = dataArray{1}; <span class="comment">% Extract start time (Matlab generated code)</span>
+fclose(fid); <span class="comment">% Close it</span>
+
+clear <span class="string">ans</span> <span class="string">dataArray</span> <span class="string">fid</span> <span class="string">filename</span> <span class="string">formatSpec</span> <span class="string">pathname</span>
+
+<span class="comment">% Light Boundaries Calculation</span>
+time_sq_max = ((max(time_sq'))/(60*60))'; <span class="comment">% Max time @ each frame (hours from start)</span>
+
+a = 1; <span class="comment">% start a counter</span>
+time_counter = 0; <span class="comment">% Start a counter</span>
+boundary = 14 - start_time; <span class="comment">% Assumes the experiment starts during the day</span>
+<span class="keyword">while</span> time_counter &lt; time_sq_max(end) - 10 <span class="comment">% (10 allows for at least a night)</span>
+    lb(a,1) = knnsearch(time_sq_max,boundary); <span class="comment">% Find the best match</span>
+    <span class="keyword">if</span> mod(a,2) == 1 <span class="comment">% If odd</span>
+        boundary = boundary + 10; <span class="comment">% Add night hours</span>
+    <span class="keyword">else</span>
+        boundary = boundary + 14; <span class="comment">% Add day hours</span>
+    <span class="keyword">end</span>
+    time_counter = time_sq_max(lb(a,1)); <span class="comment">% Set time counter</span>
+    disp(horzcat(<span class="string">'Found Light Boundary = '</span>,num2str(a))); <span class="comment">% Report progress</span>
+    a = a + 1; <span class="comment">% Add to counter</span>
+
+    <span class="comment">% stop once enough lb have been found</span>
+    <span class="keyword">if</span> a == length([days nights])
+        <span class="keyword">break</span>
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+<span class="comment">% Day vs Night</span>
+dn = ones(size(time_sq,1),1,<span class="string">'single'</span>); <span class="comment">% Pre-allocate</span>
+<span class="keyword">for</span> t = 1:2:size(lb,1) <span class="comment">% For each night boundary</span>
+    dn(lb(t):lb(t+1)-1) = 0;
+<span class="keyword">end</span>
+
+clear <span class="string">a</span> <span class="string">boundary</span> <span class="string">start_time</span> <span class="string">time_counter</span> <span class="string">time</span> <span class="string">time_sq</span> <span class="string">t</span>
+</pre><h2 id="12">Organise the data</h2><pre class="codeinput"><span class="keyword">if</span> box == 1
+    delta_px_sq(:,97:end) = []; <span class="comment">% Remove the unused box</span>
+<span class="keyword">else</span>
+    delta_px_sq(:,1:96) = []; <span class="comment">% Remove the unused box</span>
+<span class="keyword">end</span>
+
+delta_px_sq = delta_px_sq - 1; <span class="comment">% Set minimum value to zero</span>
+</pre><h2 id="13">Remove "Noise" - set values to zero</h2><p>1. Abnormally high viewpoint values 2. Topping up Fish Water</p><pre class="codeinput"><span class="comment">% 1. Remove High Viewpoint values</span>
+<span class="comment">% Note that this is adapted from the parameter extraction code (below)</span>
+wake_cells = cell(1,size(delta_px_sq,2)); <span class="comment">% Wake Cells (bout parameters)</span>
+
+<span class="comment">% Finding transitions</span>
+delta_px_sq_scrap = delta_px_sq;
+delta_px_sq_scrap(delta_px_sq_scrap &gt; 0) = 1; <span class="comment">% Find active frames</span>
+delta_px_sq_scrap = diff(delta_px_sq_scrap); <span class="comment">% Diff to find transitions</span>
+<span class="comment">% 1 = inactive to active</span>
+<span class="comment">% -1 = active to inactive</span>
+
+<span class="keyword">for</span> f = 1:size(delta_px_sq,2) <span class="comment">% For each fish</span>
+    <span class="comment">% Note this this runs apporximately twice as fast as using a</span>
+    <span class="comment">% For loop</span>
+
+    <span class="comment">% Starts - ensures no bouts are lost at the start</span>
+    <span class="keyword">if</span>  delta_px_sq(1,f) &gt; 0 <span class="comment">% If active in first bin</span>
+        wake_cells{1,f}(:,1) = [1 ; find(delta_px_sq_scrap(:,f) == 1)+1]; <span class="comment">% Find active bout starts</span>
+    <span class="keyword">else</span> <span class="comment">% Ie. if inactive in first bin</span>
+        wake_cells{1,f}(:,1) = find(delta_px_sq_scrap(:,f) == 1)+1; <span class="comment">% Find active bout starts</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% Ends - ensures no bouts are lost at the end</span>
+    <span class="keyword">if</span> delta_px_sq(size(delta_px_sq,1),f) &gt; 0 <span class="comment">% If active in last bin</span>
+        wake_cells{1,f}(:,2) = [find(delta_px_sq_scrap(:,f) == - 1);<span class="keyword">...</span>
+            size(delta_px_sq,1)]; <span class="comment">% Find active bout ends</span>
+    <span class="keyword">else</span>
+        wake_cells{1,f}(:,2) = find(delta_px_sq_scrap(:,f) == - 1);
+    <span class="keyword">end</span>
+
+    <span class="comment">% Parameter extraction</span>
+    wake_cells{1,f}(:,3) = NaN; <span class="comment">% Pre-allocate</span>
+
+    <span class="comment">% Active bouts</span>
+    <span class="keyword">for</span> b = 1:size(wake_cells{1,f},1) <span class="comment">% For each active bout</span>
+        wake_cells{1,f}(b,3) = nanmax(delta_px_sq(wake_cells{1,f}(b,1):<span class="keyword">...</span>
+            wake_cells{1,f}(b,2),f)); <span class="comment">% Max</span>
+
+        <span class="keyword">if</span> wake_cells{1,f}(b,3) &gt; threshold <span class="comment">% Hard coded threshold</span>
+            delta_px_sq(wake_cells{1,f}(b,1):<span class="keyword">...</span>
+                wake_cells{1,f}(b,2),f) = 0; <span class="comment">% Bin to zero</span>
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+clear <span class="string">b</span> <span class="string">delta_px_sq_scrap</span> <span class="string">f</span> <span class="string">wake_cells</span> <span class="string">threshold</span>
+
+<span class="comment">% 2. Filter out Hands &amp; Truncated Bouts - V2</span>
+<span class="comment">%figure; plot(nanmax(delta_px_sq')); title('Max');</span>
+<span class="comment">%figure; plot(nanmean(delta_px_sq')); title('Mean');</span>
+
+<span class="keyword">if</span> isempty(top_up) == 0 <span class="comment">% if fish h20 was topped up</span>
+    top_up_bin = nan(size(top_up,2),2,<span class="string">'single'</span>); <span class="comment">% pre-allocate (top ups x start/stop)</span>
+
+    fps = round(1/((nanmean(diff(time_sq_max)))*(60*60)),1); <span class="comment">% Calculate frame rate</span>
+
+    <span class="keyword">for</span> t = 1:size(top_up,2) <span class="comment">% For each top up</span>
+        [~,top_up_bin(t,1)] = find(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)'))) &gt;= <span class="keyword">...</span>
+            nanmean(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)')))) + <span class="keyword">...</span>
+            top_up_threshold*nanstd(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)')))),1,<span class="string">'first'</span>); <span class="comment">% find start</span>
+
+        [~,top_up_bin(t,2)] = find(abs(diff(max(delta_px_sq(lb(top_up(t)):(lb(top_up(t)) + top_up_bin(t,1) + (fps*60*20)),:)'))) &gt;= <span class="keyword">...</span>
+            nanmean(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)')))) + <span class="keyword">...</span>
+            top_up_threshold*nanstd(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)')))),1,<span class="string">'last'</span>); <span class="comment">% find stop</span>
+        <span class="comment">% Note that here I only look within 20mins (this helps avoid</span>
+        <span class="comment">% reminaing viewpoint glitches "(fps*60*20)")</span>
+
+        figure; hold <span class="string">on</span>;
+        plot(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)'))));
+        plot([top_up_bin(t,1) top_up_bin(t,1)] - (fps*90),[0 200],<span class="string">'r'</span>,<span class="string">'linewidth'</span>,3);
+        plot([top_up_bin(t,2) top_up_bin(t,2)] + (fps*90),[0 200],<span class="string">'r'</span>,<span class="string">'linewidth'</span>,3);
+
+        <span class="comment">% To ensure you get all of the noise, cut a bit more either side</span>
+        top_up_bin(t,1) = lb(top_up(t)) + top_up_bin(t,1) - (fps*90); <span class="comment">% go 90s further back</span>
+        top_up_bin(t,2) = lb(top_up(t)) + top_up_bin(t,2) + (fps*90); <span class="comment">% go 90s further forwards</span>
+
+        <span class="keyword">for</span> f = 1:size(delta_px_sq,2) <span class="comment">% for each fish</span>
+            <span class="keyword">if</span> delta_px_sq(top_up_bin(t,1),f) == 0 &amp;&amp; delta_px_sq(top_up_bin(t,2),f) == 0
+                delta_px_sq(top_up_bin(t,1):top_up_bin(t,2),f) = 0; <span class="comment">% set these values to zero</span>
+            <span class="keyword">else</span> <span class="comment">% if they have bouts overlapping with these cuts</span>
+                delta_px_sq(top_up_bin(t,1)- <span class="keyword">...</span>
+                    (find(flip(delta_px_sq(1:top_up_bin(t,1),f)) == 0,1,<span class="string">'first'</span>)-2):<span class="keyword">...</span>
+                    top_up_bin(t,2) + (find(delta_px_sq(top_up_bin(t,2):end,f) == 0,1,<span class="string">'first'</span>)-2),f) = 0;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+
+
+    <span class="keyword">end</span>
+
+<span class="keyword">else</span> <span class="comment">% if not topped up</span>
+    top_up_bin = []; <span class="comment">% store a blank variable</span>
+<span class="keyword">end</span>
+
+clear <span class="string">f</span> <span class="string">fps</span> <span class="string">t</span> <span class="string">top_up</span>
+
+<span class="comment">%figure; plot(nanmax(delta_px_sq')); title('Max - Post ');</span>
+<span class="comment">%figure; plot(nanmean(delta_px_sq')); title('Mean - Post ');</span>
+</pre><h2 id="14">Group the data by condition</h2><pre class="codeinput"><span class="comment">% Generate group tags</span>
+group_tags = nan(size(delta_px_sq,2),1); <span class="comment">% Pre-allocate</span>
+<span class="keyword">for</span> g = 1:size(geno_list.data,2) <span class="comment">% For each group</span>
+    group_tags(geno_list.data(1:find(isnan(geno_list.data(:,g))==0,1,<span class="string">'last'</span>),<span class="keyword">...</span>
+        g)) = g; <span class="comment">% Assign group membership</span>
+<span class="keyword">end</span>
+delta_px_sq(:,isnan(group_tags)) = []; <span class="comment">% Remove data</span>
+group_tags(isnan(group_tags)) = []; <span class="comment">% Remove blank values</span>
+
+clear <span class="string">g</span>
+</pre><h2 id="15">Extract Parameters from Data (&lt; Re-shaped data)</h2><pre class="codeinput"><span class="comment">% Variables</span>
+tic
+<span class="comment">% Calculate an approximate frame rate</span>
+fps = round(1/((nanmean(diff(time_sq_max)))*(60*60)),1);
+    <span class="comment">% Diff time_sq_max to find time between frames</span>
+    <span class="comment">% Take a mean, Convert to mins then hours</span>
+    <span class="comment">% Divide one by this value and round -&gt; frames per second</span>
+
+parameters = {<span class="string">'Active Bout Length'</span>,<span class="string">'Active Bout Mean'</span>,<span class="keyword">...</span>
+    <span class="string">'Active Bout Standard Deviation'</span>,<span class="string">'Active Bout Total'</span>,<span class="keyword">...</span>
+    <span class="string">'Active Bout Minimum'</span>,<span class="string">'Active Bout Maximum'</span>,<span class="string">'Number of Active Bouts'</span>,<span class="keyword">...</span>
+    <span class="string">'Total Time Active'</span>,<span class="string">'Total Activity'</span>,<span class="string">'Inactive Bout Length'</span>,<span class="string">'Number of Inactive Bouts'</span>,<span class="keyword">...</span>
+    <span class="string">'Total Time Inactive'</span>}; <span class="comment">% Specify parameters</span>
+
+<span class="comment">% Specify how to convert frame values to parameter units (for figures)</span>
+    <span class="comment">% Note that these are denominators (will later be used for division)</span>
+unit_conversion(1,:) = [fps 1 1 1 1 1 1 (fps*3600) 1 fps 1 (fps*3600)];
+unit_conversion(2,:) = [fps 1 1 1 1 1 1 1 1 fps 1 1];
+
+<span class="comment">% Specify units (for figures)</span>
+units = {<span class="string">'Seconds'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Delta Px'</span>,<span class="keyword">...</span>
+    <span class="string">'Number'</span>,<span class="string">'Hours'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Seconds'</span>,<span class="string">'Number'</span>,<span class="string">'Hours'</span>};
+units_2 = {<span class="string">'Seconds'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Delta Px'</span>,<span class="string">'Delta Px'</span>,<span class="keyword">...</span>
+    <span class="string">'Number'</span>,horzcat(<span class="string">'Seconds/'</span>,num2str(fps),<span class="string">'s'</span>),<span class="string">'Delta Px'</span>,<span class="string">'Seconds'</span>,<span class="keyword">...</span>
+    <span class="string">'Number'</span>,horzcat(<span class="string">'Seconds/'</span>,num2str(fps),<span class="string">'s'</span>)};
+
+<span class="comment">% Specify Smoothing operation (0 = mean, 1 = total, 2 = max) - for figures</span>
+parameter_smooth(1:size(parameters,2)) = 0;
+parameter_smooth(7:8) = 1; parameter_smooth(9) = 2; parameter_smooth(11:12) = 1;
+
+<span class="comment">% Pre-allocate</span>
+wake_cells = cell(1,size(delta_px_sq,2)); <span class="comment">% Wake Cells (bout parameters)</span>
+sleep_cells = cell(1,size(delta_px_sq,2)); <span class="comment">% Sleep Cells (bout parameters)</span>
+
+<span class="keyword">for</span> p = 1:size(parameters,2) <span class="comment">% For each parameter</span>
+    parameter_time{p} = nan(size(delta_px_sq),<span class="string">'single'</span>); <span class="comment">% Parameters across time</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Finding transitions</span>
+delta_px_sq_scrap = delta_px_sq;
+delta_px_sq_scrap(delta_px_sq_scrap &gt; 0) = 1; <span class="comment">% Find active frames</span>
+delta_px_sq_scrap = diff(delta_px_sq_scrap); <span class="comment">% Diff to find transitions</span>
+    <span class="comment">% 1 = inactive to active</span>
+    <span class="comment">% -1 = active to inactive</span>
+
+<span class="keyword">for</span> f = 1:size(delta_px_sq,2) <span class="comment">% For each fish</span>
+        <span class="comment">% Note this this runs apporximately twice as fast as just using a</span>
+        <span class="comment">% For loop</span>
+
+    <span class="comment">% Starts - ensures no bouts are lost at the start</span>
+    <span class="keyword">if</span>  delta_px_sq(1,f) &gt; 0 <span class="comment">% If active in first bin</span>
+        wake_cells{1,f}(:,1) = [1 ; find(delta_px_sq_scrap(:,f) == 1)+1]; <span class="comment">% Find active bout starts</span>
+        sleep_cells{1,f}(:,1) = (find(delta_px_sq_scrap(:,f) == -1)+1); <span class="comment">% Find sleep bout starts</span>
+    <span class="keyword">else</span> <span class="comment">% Ie. if inactive in first bin</span>
+        wake_cells{1,f}(:,1) = find(delta_px_sq_scrap(:,f) == 1)+1; <span class="comment">% Find active bout starts</span>
+        sleep_cells{1,f}(:,1) = [1 ; (find(delta_px_sq_scrap(:,f) == -1)+1)]; <span class="comment">% Find sleep bout starts</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% Ends - ensures no bouts are lost at the end</span>
+    <span class="keyword">if</span> delta_px_sq(size(delta_px_sq,1),f) &gt; 0 <span class="comment">% If active in last bin</span>
+        wake_cells{1,f}(:,2) = [find(delta_px_sq_scrap(:,f) == - 1);<span class="keyword">...</span>
+            size(delta_px_sq,1)]; <span class="comment">% Find active bout ends</span>
+        sleep_cells{1,f}(:,2) = find(delta_px_sq_scrap(:,f) == 1); <span class="comment">% Find sleep bout ends</span>
+    <span class="keyword">else</span>
+        wake_cells{1,f}(:,2) = find(delta_px_sq_scrap(:,f) == - 1);
+        sleep_cells{1,f}(:,2) = [(find(delta_px_sq_scrap(:,f) == 1)) ; size(delta_px_sq,1)]; <span class="comment">% Find sleep bout ends</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% Parameter extraction</span>
+    wake_cells{1,f}(:,3:8) = NaN; <span class="comment">% Pre-allocate</span>
+    wake_cells{1,f}(:,3) = (wake_cells{1,f}(:,2)+1) - wake_cells{1,f}(:,1); <span class="comment">% Wake Bout Length</span>
+    sleep_cells{1,f}(:,3) = (sleep_cells{1,f}(:,2)+1) - sleep_cells{1,f}(:,1); <span class="comment">% Sleep Bout Length</span>
+
+    <span class="comment">% Removing "Hands" - setting length to NaN</span>
+    <span class="keyword">try</span> <span class="comment">% "check" if the top up variable exists</span>
+        <span class="keyword">for</span> t = 1:size(top_up_bin,1) <span class="comment">% for each top up</span>
+            temp = sleep_cells{1,f}(sleep_cells{1,f}(:,3) &gt;= <span class="keyword">...</span>
+                diff(top_up_bin(t,:)),1:2); <span class="comment">% filter for bouts long enough</span>
+            idx = knnsearch(temp,top_up_bin(t,:)); <span class="comment">% find the best match among filtered bouts</span>
+            idx = knnsearch(sleep_cells{1,f}(:,1:2), temp(idx,:)); <span class="comment">% find this in the full set</span>
+            sleep_cells{1,f}(idx,3) = NaN; <span class="comment">% set length to NaN</span>
+        <span class="keyword">end</span>
+    <span class="keyword">catch</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% Active bouts</span>
+    <span class="keyword">for</span> b = 1:size(wake_cells{1,f},1) <span class="comment">% For each active bout</span>
+        wake_cells{1,f}(b,4) = nanmean(delta_px_sq(wake_cells{1,f}(b,1):<span class="keyword">...</span>
+            wake_cells{1,f}(b,2),f)); <span class="comment">% Mean</span>
+        wake_cells{1,f}(b,5) = nanstd(delta_px_sq(wake_cells{1,f}(b,1):<span class="keyword">...</span>
+            wake_cells{1,f}(b,2),f)); <span class="comment">% Std</span>
+        wake_cells{1,f}(b,6) = nansum(delta_px_sq(wake_cells{1,f}(b,1):<span class="keyword">...</span>
+            wake_cells{1,f}(b,2),f)); <span class="comment">% Total</span>
+        wake_cells{1,f}(b,7) = nanmin(delta_px_sq(wake_cells{1,f}(b,1):<span class="keyword">...</span>
+            wake_cells{1,f}(b,2),f)); <span class="comment">% Min</span>
+        wake_cells{1,f}(b,8) = nanmax(delta_px_sq(wake_cells{1,f}(b,1):<span class="keyword">...</span>
+            wake_cells{1,f}(b,2),f)); <span class="comment">% Max</span>
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+<span class="comment">% Parameter Time</span>
+<span class="keyword">for</span> f = 1:size(delta_px_sq,2) <span class="comment">% For each fish</span>
+
+    <span class="comment">% Active Bouts</span>
+    <span class="keyword">for</span> b = 1:size(wake_cells{1,f},1) <span class="comment">% For each active bout</span>
+        parameter_time{1}(wake_cells{1,f}(b,1),f) = <span class="keyword">...</span>
+            wake_cells{1,f}(b,3); <span class="comment">% Fill in bout length</span>
+        parameter_time{2}(wake_cells{1,f}(b,1),f) = <span class="keyword">...</span>
+            wake_cells{1,f}(b,4); <span class="comment">% Fill in bout Mean</span>
+        parameter_time{3}(wake_cells{1,f}(b,1),f) = <span class="keyword">...</span>
+            wake_cells{1,f}(b,5); <span class="comment">% Fill in bout Std</span>
+        parameter_time{4}(wake_cells{1,f}(b,1),f) = <span class="keyword">...</span>
+            wake_cells{1,f}(b,6); <span class="comment">% Fill in bout Total</span>
+        parameter_time{5}(wake_cells{1,f}(b,1),f) = <span class="keyword">...</span>
+            wake_cells{1,f}(b,7); <span class="comment">% Fill in bout Minimum</span>
+        parameter_time{6}(wake_cells{1,f}(b,1),f) = <span class="keyword">...</span>
+            wake_cells{1,f}(b,8); <span class="comment">% Fill in bout Maximum</span>
+        parameter_time{7}(wake_cells{1,f}(b,1),f) = 1; <span class="comment">% No. of Active bouts</span>
+        parameter_time{8}(wake_cells{1,f}(b,1):wake_cells{1,f}(b,2),f) = 1; <span class="comment">% Total Time Active</span>
+        parameter_time{9}(wake_cells{1,f}(b,1):wake_cells{1,f}(b,2),f) = <span class="keyword">...</span>
+            nansum(wake_cells{1,f}(1:b,6)); <span class="comment">% Total Activity</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% Inactive Bouts</span>
+    <span class="keyword">for</span> b = 1:size(sleep_cells{1,f},1) <span class="comment">% For each sleep bout</span>
+        <span class="keyword">if</span> isnan(sleep_cells{1,f}(b,3)) == 0 <span class="comment">% check it's not a "hand artefact"</span>
+            parameter_time{10}(sleep_cells{1,f}(b,1),f) = <span class="keyword">...</span>
+                sleep_cells{1,f}(b,3); <span class="comment">% Fill in bout length</span>
+            parameter_time{11}(sleep_cells{1,f}(b,1),f) = 1; <span class="comment">% No. of Inactive Bouts</span>
+            parameter_time{12}(sleep_cells{1,f}(b,1):sleep_cells{1,f}(b,2),f) = 1; <span class="comment">% Total Time Inactive</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    disp(horzcat(<span class="string">'Calculated parameters across time for fish = '</span>,num2str(f),<span class="keyword">...</span>
+    <span class="string">' of '</span>,num2str(size(delta_px_sq,2)))); <span class="comment">% Report progress</span>
+<span class="keyword">end</span>
+
+toc
+clear <span class="string">b</span> <span class="string">delta_px_sq_scrap</span> <span class="string">f</span> <span class="string">p</span>
+</pre><h2 id="16">Statistics &amp; Plots - Variables</h2><pre class="codeinput"><span class="comment">% Determine day/night order</span>
+    <span class="comment">% Note that dn currently assumes the experiment starts during the day</span>
+lb = [1 ; lb]; <span class="comment">% Add 1 to lb</span>
+<span class="keyword">if</span> dn(1) == 1 <span class="comment">% If the experiment starts in the day</span>
+    lb_days = lb(1:2:size(lb,1)); <span class="comment">% Assign day start values (in frames)</span>
+    lb_nights = lb(2:2:size(lb,1)); <span class="comment">% Assign night start values (in frames)</span>
+    days_crop = 1:2:size(lb,1); nights_crop = 2:2:size(lb,1);
+            <span class="comment">% Assign logical indicies</span>
+<span class="keyword">else</span>
+    lb_days = lb(2:2:size(lb,1)); <span class="comment">% Assign day start values (in frames)</span>
+    lb_nights = lb(1:2:size(lb,1)); <span class="comment">% Assign night start values (in frames)</span>
+    days_crop = 2:2:size(lb,1); nights_crop = 1:2:size(lb,1);
+            <span class="comment">% Assign logical indicies</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Determine which windows are of interest</span>
+time_window(1) = min([days_crop(days) nights_crop(nights)]);
+time_window(2) = max([days_crop(days) nights_crop(nights)]);
+
+<span class="comment">% Determine first night</span>
+<span class="keyword">if</span> min(days_crop(days)) &lt; min(nights_crop(nights))
+    first_night = 2;
+<span class="keyword">else</span>
+    first_night = 1;
+<span class="keyword">end</span>
+
+<span class="comment">% Colours</span>
+cmap_2 = lbmap(max(group_tags)*2,col); <span class="comment">% Generate a 2x color map</span>
+cmap = cmap_2(1:2:size(cmap_2,1),:); <span class="comment">% Extract main colors</span>
+
+<span class="comment">% Group sizes</span>
+<span class="keyword">for</span> g = 1:max(group_tags) <span class="comment">% For each group</span>
+    group_sizes(g) = size(find(group_tags == g),1);
+<span class="keyword">end</span>
+
+clear <span class="string">g</span>
+</pre><h2 id="17">Parameters - Generating Averages (in frames)</h2><pre class="codeinput">parameter_matrix = nan(size(wake_cells,2),size(parameters,2),<span class="keyword">...</span>
+    size(lb,1)); <span class="comment">% Fish x parameters x time windows</span>
+parameter_indicies = cell(2,size(wake_cells,2)); <span class="comment">% wake/sleep x fish</span>
+lb = [lb ; size(delta_px_sq,1)]; <span class="comment">% Add end to lb</span>
+
+<span class="keyword">for</span> f = 1:size(wake_cells,2) <span class="comment">% For each fish</span>
+    <span class="keyword">for</span> t = 1:size(parameter_matrix,3) <span class="comment">% For each time window</span>
+        <span class="comment">% Wake bouts</span>
+        clear <span class="string">time_start</span> <span class="string">time_stop</span>;
+        <span class="comment">% Find the first bout that starts within the window</span>
+        time_start = find(wake_cells{1,f}(:,1) &gt;= lb(t),1,<span class="string">'first'</span>);
+        <span class="comment">% Find the last bout that starts within the window</span>
+        <span class="keyword">if</span> t+1 &lt; size(lb,1) <span class="comment">% For most windows</span>
+            time_stop = find(wake_cells{1,f}(:,1) &lt; lb(t+1),1,<span class="string">'last'</span>);
+        <span class="keyword">else</span> <span class="comment">% For the last window</span>
+            time_stop = find(wake_cells{1,f}(:,1) &lt;= lb(t+1),1,<span class="string">'last'</span>);
+        <span class="keyword">end</span>
+
+        <span class="comment">% Store logical index</span>
+        parameter_indicies{1,f} = [parameter_indicies{1,f} ; <span class="keyword">...</span>
+            ones(size(time_start:time_stop,2),1)*t];
+
+        <span class="comment">% Extract bout parameters (1-6)</span>
+        parameter_matrix(f,1:(size(wake_cells{1,f},2)-2),t)<span class="keyword">...</span>
+            = nanmean(wake_cells{1,f}(time_start:time_stop,3:end)); <span class="comment">% Means</span>
+        <span class="comment">% Number of bouts (7)</span>
+        parameter_matrix(f,7,t) = size(wake_cells{1,f}<span class="keyword">...</span>
+            (time_start:time_stop,3:end),1);
+        <span class="comment">% Total time active (8) - sum of lengths</span>
+        parameter_matrix(f,8,t) = nansum(wake_cells{1,f}<span class="keyword">...</span>
+            (time_start:time_stop,3),1);
+        <span class="comment">% Total activity (9) - sum of activity</span>
+        parameter_matrix(f,9,t) = nansum(wake_cells{1,f}<span class="keyword">...</span>
+            (time_start:time_stop,6),1);
+
+        <span class="comment">% sleep bouts (10-12)</span>
+        clear <span class="string">time_start</span> <span class="string">time_stop</span>;
+        <span class="comment">% Find the first bout that starts within the window</span>
+        time_start = find(sleep_cells{1,f}(:,1) &gt;= lb(t),1,<span class="string">'first'</span>);
+        <span class="comment">% Find the last bout that starts within the window</span>
+        <span class="keyword">if</span> t+1 &lt; size(lb,1) <span class="comment">% For most windows</span>
+            time_stop = find(sleep_cells{1,f}(:,1) &lt; lb(t+1),1,<span class="string">'last'</span>);
+        <span class="keyword">else</span> <span class="comment">% For the last window</span>
+            time_stop = find(sleep_cells{1,f}(:,1) &lt;= lb(t+1),1,<span class="string">'last'</span>);
+        <span class="keyword">end</span>
+
+        <span class="comment">% Store logical index</span>
+        parameter_indicies{2,f} = [parameter_indicies{2,f} ; <span class="keyword">...</span>
+            ones(size(time_start:time_stop,2),1)*t];
+
+        <span class="comment">% Sleep Bout Length (10)</span>
+        parameter_matrix(f,10,t)<span class="keyword">...</span>
+            = nanmean(sleep_cells{1,f}(time_start:time_stop,3));
+        <span class="comment">% Number of bouts (11)</span>
+            <span class="comment">% Subtract number of NaN's (H20 Top up)</span>
+        parameter_matrix(f,11,t) = size(sleep_cells{1,f}<span class="keyword">...</span>
+            (time_start:time_stop,3:end),1)<span class="keyword">...</span>
+            - sum(isnan(sleep_cells{1,f}(time_start:time_stop,3)));
+        <span class="comment">% Total time inactive (12) - sum of lengths</span>
+        parameter_matrix(f,12,t) = nansum(sleep_cells{1,f}<span class="keyword">...</span>
+            (time_start:time_stop,3),1);
+
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Re-group data for ease of comparisons</span>
+parameter_comparisons = cell(1,size(parameters,2)); <span class="comment">% Pre-allocate</span>
+<span class="keyword">for</span> p = 1:size(parameter_comparisons,2) <span class="comment">% For each parameter</span>
+    parameter_comparisons{p}(1:max(group_sizes),1:max(group_tags),<span class="keyword">...</span>
+        1:size(parameter_matrix,3)) = NaN; <span class="comment">% {parameters} Most fish per group x</span>
+    <span class="comment">% x each group x time windows</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> p = 1:size(parameter_comparisons,2) <span class="comment">% For each parameter</span>
+    <span class="keyword">for</span> g = 1:max(group_tags) <span class="comment">% For each group</span>
+        <span class="keyword">for</span> t = 1:size(parameter_matrix,3) <span class="comment">% For each time window</span>
+            parameter_comparisons{p}(1:group_sizes(g),g,t) = <span class="keyword">...</span>
+                parameter_matrix(group_tags == g,p,t);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+clear <span class="string">f</span> <span class="string">t</span> <span class="string">time_start</span> <span class="string">time_stop</span> <span class="string">p</span> <span class="string">g</span>
+</pre><h2 id="18">Smoothing data into seconds</h2><p>Pre-allocate</p><pre class="codeinput">delta_px_sq_sec = nan(size(1:(fps):size(delta_px_sq,1),2),<span class="keyword">...</span>
+    size(delta_px_sq,2),<span class="string">'single'</span>); <span class="comment">% time (seconds) x fish</span>
+delta_px_sq_sec_smooth = nan(size(1:(fps):size(delta_px_sq,1),2),<span class="keyword">...</span>
+    size(delta_px_sq,2),<span class="string">'single'</span>); <span class="comment">% time (seconds) x fish</span>
+dn_sec = nan(size(1:(fps):size(delta_px_sq,1),2),1,<span class="string">'single'</span>); <span class="comment">% time x 1</span>
+<span class="keyword">for</span> p = 1:size(parameters,2) <span class="comment">% For each parameter</span>
+    parameter_time_sec_smooth{p} = nan(size(delta_px_sq_sec_smooth),<span class="string">'single'</span>);
+    <span class="comment">% {parameters} time (seconds) x fish</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Smooth each fish's activity &amp; parameters</span>
+<span class="keyword">for</span> f = 1:size(delta_px_sq,2) <span class="comment">% For each fish</span>
+
+    a = 1; <span class="comment">% Start a counter</span>
+    <span class="keyword">for</span> t = 1:(fps):size(delta_px_sq,1) <span class="comment">% For each second</span>
+        <span class="keyword">if</span> t + (fps-1) &lt; size(delta_px_sq,1) <span class="comment">% Check to prevent running off the end</span>
+            delta_px_sq_sec(a,f) = nansum(delta_px_sq(t:t+(fps-1),f)); <span class="comment">% Bin activity</span>
+
+            <span class="keyword">for</span> p = 1:size(parameters,2) <span class="comment">% For each parameter</span>
+                <span class="keyword">if</span> parameter_smooth(p) == 0 <span class="comment">% For most parameters</span>
+                    parameter_time_sec_smooth{p}(a,f) = <span class="keyword">...</span>
+                        nanmean(parameter_time{p}(t:t+(fps-1),f)); <span class="comment">% Mean</span>
+                <span class="keyword">elseif</span> parameter_smooth(p) == 1
+                    parameter_time_sec_smooth{p}(a,f) = <span class="keyword">...</span>
+                        nansum(parameter_time{p}(t:t+(fps-1),f)); <span class="comment">% Sum</span>
+                <span class="keyword">elseif</span> parameter_smooth(p) == 2
+                    parameter_time_sec_smooth{p}(a,f) = <span class="keyword">...</span>
+                        nanmax(parameter_time{p}(t:t+(fps-1),f)); <span class="comment">% Max</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            <span class="keyword">if</span> f == 1 <span class="comment">% For the first fish</span>
+                dn_sec(a,1) = mode(dn(t:t+(fps-1),1));
+                <span class="comment">% Take the most common light value within each bin</span>
+                <span class="comment">% Will need to create indicies for each time window here</span>
+                <span class="comment">% (04.08.17)</span>
+            <span class="keyword">end</span>
+
+        a = a + 1; <span class="comment">% Add to counter</span>
+
+        <span class="keyword">else</span>
+            delta_px_sq_sec(a,f) = 0; <span class="comment">% This prevents smoothing errors</span>
+            dn_sec(a,1) = dn_sec(a-1,1); <span class="comment">% Assume last value</span>
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+
+    <span class="comment">% Smooth the activity data</span>
+    delta_px_sq_sec_smooth(:,f) = smooth(delta_px_sq_sec(:,f),time_bins);
+    disp(horzcat(<span class="string">'Smoothed fish '</span>,num2str(f),<span class="string">' of '</span> ,<span class="keyword">...</span>
+        num2str(size(delta_px_sq,2)))); <span class="comment">% Report progress</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Determine Day/Night Transitions in seconds</span>
+<span class="comment">% Note that the binning will make this not 100% accurate</span>
+lb_sec = [1 ; find(diff(dn_sec) ~= 0) + 1; size(delta_px_sq_sec_smooth,1)];
+
+clear <span class="string">a</span> <span class="string">f</span> <span class="string">p</span> <span class="string">t</span>
+</pre><h2 id="19">Save WorkSpace</h2><pre class="codeinput">save(strcat(save_pathname,<span class="string">'/'</span>,save_name,<span class="string">'.mat'</span>),<span class="string">'-v7.3'</span>); <span class="comment">% save data  % ! FK changed \ to /</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% Vp_Extract 
+
+% marcus.ghosh.11@ucl.ac.uk 
+
+%% Info 
+
+% Extracts data from Viewpoint files with data for every frame
+
+% Input
+    % Excel Sheets - output from re-running a viewpoint file  
+        % Each with:
+        % Rows - every frame for every animal
+        % Columns including:
+            % Type - data (101) or errors (~=101)
+            % Location - which animal each data point came from
+            % Data - pixels changed that frame
+    % Perl Batch data file (txt) - ouput from running Pearl_Batch_192.m  
+    % Genotype list (txt): 
+        % Columns - group names  
+        % Rows - ROI ID's assigning each fish to a group 
+        
+% Output 
+    % Data structures that can be fed into Vp_Analyse.m  
+    % Note that sleep_cells will contain NaN values if the fish water was topped up 
+    
+%% Assumptions 
+
+% Data comes from 192 regions of interest (ROIS) 
+% Experiments start during the day 
+% Days are 14hours long, nights are 10hours long 
+
+%% Dependencies 
+
+% Files  
+    % dir2
+        % https://github.com/ghoshm/Utilities/blob/master/dir2.m 
+
+    % lbmap
+        %https://uk.mathworks.com/matlabcentral/fileexchange/17555-light-bartlein-color-maps
+
+    % Nat Sort Files 
+        %http://uk.mathworks.com/matlabcentral/fileexchange/47434-natural-order-filename-sort 
+
+    % ProgressBar
+        %http://uk.mathworks.com/matlabcentral/fileexchange/6922-progressbar
+    
+% MATLAB Products 
+    % Statistics and Machine Learning Toolbox
+    % Curve Fitting Toolbox
+    % Parallel Computing Toolbox
+    % MATLAB Distributed Computing Server # I installed the Amazon Services
+    % one?
+
+%% Options
+    % For *'s see "Notes on Options" below 
+    
+% General  
+lines_per_sheet = 50000; % Specify the number of data points per Excel sheet 
+box = 1; % set which of the two boxes you want to use (*) 
+threshold = 200; % Maximum delta px value (**)  
+top_up = [2 4]; % alter to light boundaries where you topped up fish water.
+    % E.g. Day 2 and 3 (top_up = [2 4]). 
+    % E.g. Not topped up (top_up = []). 
+top_up_threshold = 8; % threshold for cropping data where water was topped up (***)
+time_bins = 60*15; % Choose plot smoothing (from seconds) 
+days = [1 2 3 4]; % number of days  
+nights = [1 2 3]; % number of nights 
+
+% Colors 
+col = 'RedBlue'; % (****) 
+night_color = [0.9608 0.9608 0.9608]; % color of night shading   
+
+%% Notes on Options  
+%* at this point its easier to run each seperatly then merge
+    % the data later using Vp_Analyse  
+    
+% ** A hard threshold is a simple solution, though removing whole bouts
+    % including these values is best as it avoids leaving "cut bouts" 
+    % From my 3 WT experiments (with lids so no hands), the maximum value I
+    % Observe is 165px.
+    % From a PTZ Dose response (you may expect higher values) the data
+    % doesn't exceed this
+    % From looking @ 6 Hcrt experiments and the PTZ experiment - data(data > 0)
+    % prctile and std, there is no obvious flexible cut off that could be used. 
+    
+% *** Again a hard coded threshold is a simple solution. 
+    % So far experiments @ 25Hz work with 10 
+    % experiments @ 15Hz work with 8
+
+% **** Choice of 
+    % 'Blue'       Single-hue progression to purlish-blue (default)
+    % 'BlueGray'   Diverging progression from blue to gray
+    % 'BrownBlue'  Orange-white-purple diverging scheme
+    % 'RedBlue'    Modified spectral scheme
+    
+%% Selecting Files  
+
+% Select a folder of Excel Sheet
+disp ('>Folder with Excel files?')
+folder_path = uigetdir([],'Select a folder of Excel sheets'); % Choose your experiment
+folder_open = dir2(folder_path); % Open this folder
+disp(horzcat('Running File ',folder_path)); % Report file choice  
+
+% Select a geno_list
+disp('>Metadata file?')
+[filename, pathname] = uigetfile('*.txt', 'Select a Genotype List'); % Select a geno file
+if isequal(filename,0) % If no file is selected
+    error('No File Selected') % Show Error
+else %If selected
+    disp(['User selected ', fullfile(pathname, filename)]) % Show selected filename
+end
+geno_list = importdata(strcat(pathname,filename),'\t',2); % Load genolist
+
+clear filename pathname 
+
+% Select a Perl Batch Data File
+disp ('>Data file from perl_batch_192?')
+[filename, pathname] = uigetfile('*.txt',...
+    'Select a Perl Batch Output (DATA) File'); % Select a geno file
+if isequal(filename,0) % If no file is selected
+    error('No Data File Selected') % Show Error
+else %If selected
+    disp(['User selected ', fullfile(pathname, filename)]) % Show selected filename
+end
+
+% Select a save path 
+disp ('>Save output?')
+save_pathname = uigetdir([],'Select a save location'); 
+[~,save_name,~] = fileparts(filename); % assign file name for save 
+disp(['Save path ',save_pathname]); % report 
+
+%% Load Data from Excel Sheets 
+
+tic
+% Pre-allocation
+time = nan(size(folder_open,1)*lines_per_sheet,1,'single'); % time {1}
+%pause(30); % Wait for memory 
+data_type = nan(size(folder_open,1)*lines_per_sheet,1,'single'); % Data type {2} 
+%pause(30); % Wait for memory 
+fish_id = nan(size(folder_open,1)*lines_per_sheet,1,'single'); % Fish id {3}
+%pause(30); % Wait for memory 
+delta_px = nan(size(folder_open,1)*lines_per_sheet,1,'single'); % Delta px {4}
+%pause(30); % Wait for memory 
+sheet_names = cell(size(folder_open,1),1); % Excel sheet names  
+
+% Ordering by File Name 
+for f = 1:size(folder_open,1) % For each excel file 
+    sheet_names{f} = folder_open(f).name; % Take it's name 
+end % Note that these will be in "computer" order 
+    % Ie. 1-10, 100, 1000 etc 
+
+[~,O] = natsortfiles(sheet_names); % Use natsortfiles to sort by file name
+    clear sheet_names; % Clear Sheet names 
+    
+a = 1; % Start a counter 
+progress = 0; % Start a timer
+data_type_errors = 0; % Start a counter  
+order_errors = 0; % Start a counter 
+order_errors_size = []; % pre-allocate an empty vector
+progressbar('Files') %Initialise progress bars 
+for f = O' % For each Excel file
+    
+    % Load data 
+        % Raw data structure 
+            % 1 - Time 
+            % 2 - Data type 
+            % 3 - Fish ID 
+            % 4 - Delta px
+    fid = fopen(strcat(folder_path,'/',folder_open(f).name)); % Open it % FK ! I changed \ to /
+    if f == O(1) % For the first file Skip the first blank lines
+        raw_text = textscan(fid,... % Read in the data
+            '%*f32 %f32 %*f32 %f32 %*1s %s %f32','headerlines',192 + 1);
+    else % For the rest of the files 
+        raw_text = textscan(fid,... % Read in the data
+            '%*f32 %f32 %*f32 %f32 %*1s %s %f32','headerlines',1);
+    end
+    
+    % Error Handling 
+    
+    % Dealing with data_type errors (e)
+        % Note that this includes cropping the end of the experiment off 
+    found = find(raw_text{2} ~= 101); % Find errors
+    if isempty(found) ~= 1 % If there are errors 
+        for e = 1:size(raw_text,2) % For each data type being imported
+            raw_text{e}(found) = []; % Remove errors
+        end
+        data_type_errors = data_type_errors + 1; % Add to error counter  
+    end
+    clear found;
+    
+    % Dealing with ordering errors 
+    fish_id_order = str2num(char(raw_text{3})); % Convert str to num
+    fish_id_order_check = diff(fish_id_order); % Diff these values
+    found = find(fish_id_order_check ~= 1 & fish_id_order_check ~= -191 &...
+        isnan(fish_id_order_check) == 0,1,'first'); % Find the first frame drops 
+    
+    while isempty(found) == 0 % While there are dropped frames 
+
+        % Use a sliding window to find where the pattern normalises
+        % Cut backwards
+        found_clip_b = [191 1];
+        if found - found_clip_b(1) < 1
+            found_clip_b = [found + 1 found + 1]; 
+        else
+            while sum(fish_id_order_check(found - found_clip_b(1):found - found_clip_b(2))) ~= 191
+                found_clip_b = found_clip_b + 1; % Slide window
+                
+                % Catch Running past the start of the file exception
+                if found - found_clip_b(1) < 1
+                    found_clip_b = [found_clip_b(1) + 1 found_clip_b(1) + 1];
+                    break
+                end
+            end
+        end
+        
+        % Cut forwards
+        found_clip_f = [1 191];
+        if found + found_clip_f(2) > length(fish_id_order_check)
+            found_clip_f = [length(fish_id_order_check) - found + 2 ... 
+                length(fish_id_order_check) - found + 2]; 
+        else
+            while sum(fish_id_order_check(found + found_clip_f(1):found + found_clip_f(2))) ~= 191
+                found_clip_f = found_clip_f + 1; % Slide window
+                
+                % Catch Running past the end of the file exception
+                if found + found_clip_f(2) > length(fish_id_order_check)
+                    found_clip_f = [found_clip_f(2)+1 found_clip_f(2)+1];
+                    break
+                end
+            end
+        end
+        
+        % Now set values between these sections to NaN
+        fish_id_order(found - found_clip_b(2)+2:found + found_clip_f(1)-1) = NaN;
+        order_errors_size(order_errors+1,1) = ...
+            size(found - found_clip_b(2)+2:found + found_clip_f(1)-1,2); 
+            % Store the size of the removed data 
+        clear found_clip_b found_clip_f
+        
+        fish_id_order_check = diff(fish_id_order); % Diff the new fish order
+        found = find(fish_id_order_check ~= 1 & fish_id_order_check ~= -191 &...
+            isnan(fish_id_order_check) == 0,1,'first'); % Find other frame drops
+        order_errors = order_errors + 1; % Add to the order errors counter 
+    end
+        
+    % Data Storage 
+    if a == 1 % For the first file 
+        time(a:size(raw_text{1},1),1) = raw_text{1}; % Time 
+        data_type(a:size(raw_text{1},1),1) = raw_text{2}; % Data Type 
+        fish_id(a:size(raw_text{1},1),1) = fish_id_order; % Fish Id order 
+        delta_px(a:size(raw_text{1},1),1) = raw_text{4}; % Delta px 
+            a = a + size(raw_text{1},1); % Add to counter 
+    else % For all other files 
+        time(a:a+size(raw_text{1},1)-1,1) = raw_text{1}; % Time 
+        data_type(a:a+size(raw_text{1},1)-1,1) = raw_text{2}; % Data Type 
+        fish_id(a:a+size(raw_text{1},1)-1,1) = fish_id_order; % Fish Id order 
+        delta_px(a:a+size(raw_text{1},1)-1,1) = raw_text{4}; % Delta px 
+            a = a + size(raw_text{1},1); % Add to counter
+    end
+        
+    % Clean up 
+    fclose(fid); clear fish_id_order fish_id_order_check found raw_text; % Clear variables
+    
+    progress = progress + 1; % Add to timer 
+    progressbar(progress/size(folder_open,1)); %Update the Fish progressbar
+    
+end
+disp('Time taken to load data from Excel sheets'); % report progress
+toc 
+
+% Report back on errors 
+disp(horzcat(num2str(data_type_errors),' Files with Data Type Errors')); 
+disp(horzcat(num2str(order_errors),' Order Errors')); 
+for e = 1:size(order_errors_size,1) % For each order error 
+    disp(horzcat('Order Error ',num2str(e),' Size = ',num2str(order_errors_size(e)))); 
+end 
+disp(horzcat('Ran File ',folder_path)); % Report file choice  
+
+clear a e ans data_type data_type_errors f fid folder_open folder_path ...
+    lines_per_sheet O order_errors order_errors_size progress
+
+%% Checking for Persistant Ordering Errors
+% At this point only one type of ordering error will remain
+% This will be the rare case where the ordering error bridges two Excel sheets
+% E.g. 171030_16
+
+% Check for remaining Errors
+scrap = diff(isnan(fish_id));
+% This will leave either
+% +1 (A number to a NaN)
+% -1 (A NaN to a number)
+% 0 (number to number)
+
+% Check for Backwards errors
+check(:,1) = find(scrap == 1); % Locs
+check(:,2) = fish_id(scrap == 1); % Values (should all be 192)
+
+if isempty(find(check(:,2) ~= 192)) == 0 % If there are errors
+    err = find(check(:,2) ~= 192); % define them
+    fish_id_diff = diff(fish_id); % diff fish_id
+    
+    for e = 1:size(err,1) % for each error
+        
+        % Use a sliding window to find where the pattern normalises
+        % Cut backwards
+        found = check(err(e,1),1); % set the error location
+        found_clip_b = [191 1];
+        if found - found_clip_b(1) < 1
+            found_clip_b = [found + 1 found + 1];
+        else
+            while sum(fish_id_diff(found - found_clip_b(1):found - found_clip_b(2))) ~= 191
+                found_clip_b = found_clip_b + 1; % Slide window
+                
+                % Catch Running past the start of the file exception
+                if found - found_clip_b(1) < 1
+                    found_clip_b = [found_clip_b(1) + 1 found_clip_b(1) + 1];
+                    break
+                end
+            end
+        end
+        
+        fish_id(found - found_clip_b(2)+2:found) = NaN;
+    end
+    
+end
+
+clear check err e found found_clip_b fish_id_diff
+
+% Check for forwards errors
+check(:,1) = find(scrap == -1) + 1;
+check(:,2) = fish_id(find(scrap == -1)+1);
+
+if isempty(find(check(:,2) ~= 1)) == 0 % If there are errors
+    err = find(check(:,2) ~= 1); % define them
+    fish_id_diff = diff(fish_id); % diff fish_id
+    
+    for e = 1:size(err,1) % for each error
+        
+        % Cut forwards
+        found = check(err(e,1),1); % set the error location
+        found_clip_f = [1 191];
+        if found + found_clip_f(2) > length(fish_id_diff)
+            found_clip_f = [length(fish_id_diff) - found + 2 ...
+                length(fish_id_diff) - found + 2];
+        else
+            while sum(fish_id_diff(found + found_clip_f(1):found + found_clip_f(2))) ~= 191
+                found_clip_f = found_clip_f + 1; % Slide window
+                
+                % Catch Running past the end of the file exception
+                if found + found_clip_f(2) > length(fish_id_diff)
+                    found_clip_f = [found_clip_f(2)+1 found_clip_f(2)+1];
+                    break
+                end
+            end
+        end
+        
+        fish_id(found:found + found_clip_f(1)-1) = NaN;
+    end
+    
+end
+
+clear check err fish_id_diff e found found_clip_f fish_id_diff scrap
+
+disp('Found & Corrected Persistant Ordering Errors'); % Report
+
+%% Reshape The Data 
+
+% Check that the tracking start's with fish 1 
+if fish_id(1) ~= 1 % if not 
+   crop = find(fish_id == 1,1,'first') - 1; % find just before fish 1   
+   % Crop all of the data 
+       delta_px(1:crop) = []; 
+       fish_id(1:crop) = []; 
+       time(1:crop) = []; 
+   clear crop; 
+end 
+
+% Check the number of frames per fish is correct 
+frames_per_fish = zeros(1,max(fish_id)); 
+for f = 1:max(fish_id) % For each fish 
+    clear found; 
+    found = find(fish_id == f); % Find it's data points 
+    frames_per_fish(f) = size(found,1); % Store number of frames 
+    disp(horzcat('Found frames for fish Number ',num2str(f),' of ',...
+        num2str(max(fish_id)))); % Report on progress 
+end 
+
+if min(frames_per_fish) ~= max(frames_per_fish) % If the number of frames is not equal 
+   error('Data formatted Incorrectly'); % Call an error  
+end 
+
+% Delta px sq 
+for f = 1:max(fish_id) % For each fish  
+    clear found; 
+    found = find(fish_id == f); % Find it's data points 
+    
+    if f == 1 % For the first fish 
+        delta_px_sq = nan(frames_per_fish(1),max(fish_id),'single'); 
+        % Pre-allocate 
+    end
+    
+    delta_px_sq(:,f) = delta_px(found); % Take delta_px values
+    disp(horzcat('Collected frames for fish ',num2str(f),...
+        ' of ',num2str(max(fish_id)))); % Report on progress 
+end 
+clear f found delta_px
+
+% Time sq 
+    % Note this is separated from delta px sq for ease of memory handling 
+for f = 1:max(fish_id) % For each fish  
+    clear found; 
+    found = find(fish_id == f); % Find it's data points 
+    
+    if f == 1 % For the first fish 
+        time_sq = nan(frames_per_fish(1),max(fish_id),'single'); 
+        % Pre-allocate 
+    end
+    
+    time_sq(:,f) = time(found); % Take time values 
+    disp(horzcat('Collected time for fish ',num2str(f),...
+        ' of ',num2str(max(fish_id)))); % Report on progress 
+end
+clear f found time fish_id frames_per_fish
+
+%% Add in time 
+
+fid = fopen(strcat(pathname,filename)); % Open time data 
+formatSpec = '%*884s%f%[^\n\r]';
+dataArray = textscan(fid, formatSpec, 3-3+1, 'Delimiter',...
+    '', 'WhiteSpace', '', 'HeaderLines', 2, 'ReturnOnError', false, 'EndOfLine', '\r\n');
+start_time = dataArray{1}; % Extract start time (Matlab generated code) 
+fclose(fid); % Close it 
+
+clear ans dataArray fid filename formatSpec pathname
+
+% Light Boundaries Calculation
+time_sq_max = ((max(time_sq'))/(60*60))'; % Max time @ each frame (hours from start) 
+
+a = 1; % start a counter
+time_counter = 0; % Start a counter 
+boundary = 14 - start_time; % Assumes the experiment starts during the day
+while time_counter < time_sq_max(end) - 10 % (10 allows for at least a night)  
+    lb(a,1) = knnsearch(time_sq_max,boundary); % Find the best match 
+    if mod(a,2) == 1 % If odd
+        boundary = boundary + 10; % Add night hours
+    else
+        boundary = boundary + 14; % Add day hours
+    end
+    time_counter = time_sq_max(lb(a,1)); % Set time counter 
+    disp(horzcat('Found Light Boundary = ',num2str(a))); % Report progress
+    a = a + 1; % Add to counter
+    
+    % stop once enough lb have been found 
+    if a == length([days nights])
+        break 
+    end 
+    
+end
+
+% Day vs Night
+dn = ones(size(time_sq,1),1,'single'); % Pre-allocate 
+for t = 1:2:size(lb,1) % For each night boundary
+    dn(lb(t):lb(t+1)-1) = 0;   
+end 
+
+clear a boundary start_time time_counter time time_sq t 
+
+%% Organise the data 
+
+if box == 1
+    delta_px_sq(:,97:end) = []; % Remove the unused box
+else
+    delta_px_sq(:,1:96) = []; % Remove the unused box  
+end
+
+delta_px_sq = delta_px_sq - 1; % Set minimum value to zero 
+
+%% Remove "Noise" - set values to zero
+% 1. Abnormally high viewpoint values
+% 2. Topping up Fish Water
+
+% 1. Remove High Viewpoint values
+% Note that this is adapted from the parameter extraction code (below)
+wake_cells = cell(1,size(delta_px_sq,2)); % Wake Cells (bout parameters)
+
+% Finding transitions
+delta_px_sq_scrap = delta_px_sq;
+delta_px_sq_scrap(delta_px_sq_scrap > 0) = 1; % Find active frames
+delta_px_sq_scrap = diff(delta_px_sq_scrap); % Diff to find transitions
+% 1 = inactive to active
+% -1 = active to inactive
+
+for f = 1:size(delta_px_sq,2) % For each fish
+    % Note this this runs apporximately twice as fast as using a
+    % For loop
+    
+    % Starts - ensures no bouts are lost at the start
+    if  delta_px_sq(1,f) > 0 % If active in first bin
+        wake_cells{1,f}(:,1) = [1 ; find(delta_px_sq_scrap(:,f) == 1)+1]; % Find active bout starts
+    else % Ie. if inactive in first bin
+        wake_cells{1,f}(:,1) = find(delta_px_sq_scrap(:,f) == 1)+1; % Find active bout starts
+    end
+    
+    % Ends - ensures no bouts are lost at the end
+    if delta_px_sq(size(delta_px_sq,1),f) > 0 % If active in last bin
+        wake_cells{1,f}(:,2) = [find(delta_px_sq_scrap(:,f) == - 1);...
+            size(delta_px_sq,1)]; % Find active bout ends
+    else
+        wake_cells{1,f}(:,2) = find(delta_px_sq_scrap(:,f) == - 1);
+    end
+    
+    % Parameter extraction
+    wake_cells{1,f}(:,3) = NaN; % Pre-allocate
+    
+    % Active bouts
+    for b = 1:size(wake_cells{1,f},1) % For each active bout
+        wake_cells{1,f}(b,3) = nanmax(delta_px_sq(wake_cells{1,f}(b,1):...
+            wake_cells{1,f}(b,2),f)); % Max
+        
+        if wake_cells{1,f}(b,3) > threshold % Hard coded threshold
+            delta_px_sq(wake_cells{1,f}(b,1):...
+                wake_cells{1,f}(b,2),f) = 0; % Bin to zero
+        end
+        
+    end
+    
+end
+
+clear b delta_px_sq_scrap f wake_cells threshold
+
+% 2. Filter out Hands & Truncated Bouts - V2 
+%figure; plot(nanmax(delta_px_sq')); title('Max'); 
+%figure; plot(nanmean(delta_px_sq')); title('Mean'); 
+
+if isempty(top_up) == 0 % if fish h20 was topped up
+    top_up_bin = nan(size(top_up,2),2,'single'); % pre-allocate (top ups x start/stop)
+    
+    fps = round(1/((nanmean(diff(time_sq_max)))*(60*60)),1); % Calculate frame rate
+    
+    for t = 1:size(top_up,2) % For each top up
+        [~,top_up_bin(t,1)] = find(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)'))) >= ...
+            nanmean(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)')))) + ...
+            top_up_threshold*nanstd(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)')))),1,'first'); % find start 
+        
+        [~,top_up_bin(t,2)] = find(abs(diff(max(delta_px_sq(lb(top_up(t)):(lb(top_up(t)) + top_up_bin(t,1) + (fps*60*20)),:)'))) >= ...
+            nanmean(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)')))) + ...
+            top_up_threshold*nanstd(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)')))),1,'last'); % find stop 
+        % Note that here I only look within 20mins (this helps avoid
+        % reminaing viewpoint glitches "(fps*60*20)") 
+        
+        figure; hold on;
+        plot(abs(diff(max(delta_px_sq(lb(top_up(t)):lb(top_up(t)+1),:)'))));
+        plot([top_up_bin(t,1) top_up_bin(t,1)] - (fps*90),[0 200],'r','linewidth',3);
+        plot([top_up_bin(t,2) top_up_bin(t,2)] + (fps*90),[0 200],'r','linewidth',3);
+        
+        % To ensure you get all of the noise, cut a bit more either side 
+        top_up_bin(t,1) = lb(top_up(t)) + top_up_bin(t,1) - (fps*90); % go 90s further back
+        top_up_bin(t,2) = lb(top_up(t)) + top_up_bin(t,2) + (fps*90); % go 90s further forwards
+        
+        for f = 1:size(delta_px_sq,2) % for each fish
+            if delta_px_sq(top_up_bin(t,1),f) == 0 && delta_px_sq(top_up_bin(t,2),f) == 0
+                delta_px_sq(top_up_bin(t,1):top_up_bin(t,2),f) = 0; % set these values to zero
+            else % if they have bouts overlapping with these cuts
+                delta_px_sq(top_up_bin(t,1)- ...
+                    (find(flip(delta_px_sq(1:top_up_bin(t,1),f)) == 0,1,'first')-2):...
+                    top_up_bin(t,2) + (find(delta_px_sq(top_up_bin(t,2):end,f) == 0,1,'first')-2),f) = 0;
+            end
+        end
+        
+
+        
+    end
+    
+else % if not topped up
+    top_up_bin = []; % store a blank variable
+end
+
+clear f fps t top_up
+
+%figure; plot(nanmax(delta_px_sq')); title('Max - Post '); 
+%figure; plot(nanmean(delta_px_sq')); title('Mean - Post '); 
+
+%% Group the data by condition 
+
+% Generate group tags 
+group_tags = nan(size(delta_px_sq,2),1); % Pre-allocate
+for g = 1:size(geno_list.data,2) % For each group 
+    group_tags(geno_list.data(1:find(isnan(geno_list.data(:,g))==0,1,'last'),...
+        g)) = g; % Assign group membership  
+end 
+delta_px_sq(:,isnan(group_tags)) = []; % Remove data   
+group_tags(isnan(group_tags)) = []; % Remove blank values 
+
+clear g  
+
+%% Extract Parameters from Data (< Re-shaped data)
+
+% Variables 
+tic
+% Calculate an approximate frame rate 
+fps = round(1/((nanmean(diff(time_sq_max)))*(60*60)),1); 
+    % Diff time_sq_max to find time between frames 
+    % Take a mean, Convert to mins then hours 
+    % Divide one by this value and round -> frames per second
+    
+parameters = {'Active Bout Length','Active Bout Mean',...
+    'Active Bout Standard Deviation','Active Bout Total',...
+    'Active Bout Minimum','Active Bout Maximum','Number of Active Bouts',...
+    'Total Time Active','Total Activity','Inactive Bout Length','Number of Inactive Bouts',...
+    'Total Time Inactive'}; % Specify parameters  
+
+% Specify how to convert frame values to parameter units (for figures)
+    % Note that these are denominators (will later be used for division) 
+unit_conversion(1,:) = [fps 1 1 1 1 1 1 (fps*3600) 1 fps 1 (fps*3600)];
+unit_conversion(2,:) = [fps 1 1 1 1 1 1 1 1 fps 1 1];  
+
+% Specify units (for figures) 
+units = {'Seconds','Delta Px','Delta Px','Delta Px','Delta Px','Delta Px',...
+    'Number','Hours','Delta Px','Seconds','Number','Hours'};
+units_2 = {'Seconds','Delta Px','Delta Px','Delta Px','Delta Px','Delta Px',...
+    'Number',horzcat('Seconds/',num2str(fps),'s'),'Delta Px','Seconds',...
+    'Number',horzcat('Seconds/',num2str(fps),'s')};
+
+% Specify Smoothing operation (0 = mean, 1 = total, 2 = max) - for figures 
+parameter_smooth(1:size(parameters,2)) = 0; 
+parameter_smooth(7:8) = 1; parameter_smooth(9) = 2; parameter_smooth(11:12) = 1; 
+
+% Pre-allocate 
+wake_cells = cell(1,size(delta_px_sq,2)); % Wake Cells (bout parameters)  
+sleep_cells = cell(1,size(delta_px_sq,2)); % Sleep Cells (bout parameters) 
+
+for p = 1:size(parameters,2) % For each parameter
+    parameter_time{p} = nan(size(delta_px_sq),'single'); % Parameters across time 
+end 
+
+% Finding transitions
+delta_px_sq_scrap = delta_px_sq; 
+delta_px_sq_scrap(delta_px_sq_scrap > 0) = 1; % Find active frames 
+delta_px_sq_scrap = diff(delta_px_sq_scrap); % Diff to find transitions  
+    % 1 = inactive to active 
+    % -1 = active to inactive 
+ 
+for f = 1:size(delta_px_sq,2) % For each fish 
+        % Note this this runs apporximately twice as fast as just using a
+        % For loop 
+    
+    % Starts - ensures no bouts are lost at the start  
+    if  delta_px_sq(1,f) > 0 % If active in first bin  
+        wake_cells{1,f}(:,1) = [1 ; find(delta_px_sq_scrap(:,f) == 1)+1]; % Find active bout starts
+        sleep_cells{1,f}(:,1) = (find(delta_px_sq_scrap(:,f) == -1)+1); % Find sleep bout starts 
+    else % Ie. if inactive in first bin 
+        wake_cells{1,f}(:,1) = find(delta_px_sq_scrap(:,f) == 1)+1; % Find active bout starts 
+        sleep_cells{1,f}(:,1) = [1 ; (find(delta_px_sq_scrap(:,f) == -1)+1)]; % Find sleep bout starts 
+    end 
+    
+    % Ends - ensures no bouts are lost at the end 
+    if delta_px_sq(size(delta_px_sq,1),f) > 0 % If active in last bin 
+        wake_cells{1,f}(:,2) = [find(delta_px_sq_scrap(:,f) == - 1);...
+            size(delta_px_sq,1)]; % Find active bout ends
+        sleep_cells{1,f}(:,2) = find(delta_px_sq_scrap(:,f) == 1); % Find sleep bout ends
+    else 
+        wake_cells{1,f}(:,2) = find(delta_px_sq_scrap(:,f) == - 1); 
+        sleep_cells{1,f}(:,2) = [(find(delta_px_sq_scrap(:,f) == 1)) ; size(delta_px_sq,1)]; % Find sleep bout ends
+    end
+    
+    % Parameter extraction 
+    wake_cells{1,f}(:,3:8) = NaN; % Pre-allocate 
+    wake_cells{1,f}(:,3) = (wake_cells{1,f}(:,2)+1) - wake_cells{1,f}(:,1); % Wake Bout Length 
+    sleep_cells{1,f}(:,3) = (sleep_cells{1,f}(:,2)+1) - sleep_cells{1,f}(:,1); % Sleep Bout Length 
+
+    % Removing "Hands" - setting length to NaN
+    try % "check" if the top up variable exists  
+        for t = 1:size(top_up_bin,1) % for each top up
+            temp = sleep_cells{1,f}(sleep_cells{1,f}(:,3) >= ...
+                diff(top_up_bin(t,:)),1:2); % filter for bouts long enough
+            idx = knnsearch(temp,top_up_bin(t,:)); % find the best match among filtered bouts
+            idx = knnsearch(sleep_cells{1,f}(:,1:2), temp(idx,:)); % find this in the full set
+            sleep_cells{1,f}(idx,3) = NaN; % set length to NaN
+        end
+    catch
+    end
+    
+    % Active bouts 
+    for b = 1:size(wake_cells{1,f},1) % For each active bout
+        wake_cells{1,f}(b,4) = nanmean(delta_px_sq(wake_cells{1,f}(b,1):...
+            wake_cells{1,f}(b,2),f)); % Mean
+        wake_cells{1,f}(b,5) = nanstd(delta_px_sq(wake_cells{1,f}(b,1):...
+            wake_cells{1,f}(b,2),f)); % Std
+        wake_cells{1,f}(b,6) = nansum(delta_px_sq(wake_cells{1,f}(b,1):...
+            wake_cells{1,f}(b,2),f)); % Total
+        wake_cells{1,f}(b,7) = nanmin(delta_px_sq(wake_cells{1,f}(b,1):...
+            wake_cells{1,f}(b,2),f)); % Min
+        wake_cells{1,f}(b,8) = nanmax(delta_px_sq(wake_cells{1,f}(b,1):...
+            wake_cells{1,f}(b,2),f)); % Max
+    end
+    
+end 
+ 
+% Parameter Time 
+for f = 1:size(delta_px_sq,2) % For each fish
+    
+    % Active Bouts 
+    for b = 1:size(wake_cells{1,f},1) % For each active bout
+        parameter_time{1}(wake_cells{1,f}(b,1),f) = ...
+            wake_cells{1,f}(b,3); % Fill in bout length
+        parameter_time{2}(wake_cells{1,f}(b,1),f) = ...
+            wake_cells{1,f}(b,4); % Fill in bout Mean
+        parameter_time{3}(wake_cells{1,f}(b,1),f) = ...
+            wake_cells{1,f}(b,5); % Fill in bout Std 
+        parameter_time{4}(wake_cells{1,f}(b,1),f) = ...
+            wake_cells{1,f}(b,6); % Fill in bout Total  
+        parameter_time{5}(wake_cells{1,f}(b,1),f) = ...
+            wake_cells{1,f}(b,7); % Fill in bout Minimum 
+        parameter_time{6}(wake_cells{1,f}(b,1),f) = ...
+            wake_cells{1,f}(b,8); % Fill in bout Maximum 
+        parameter_time{7}(wake_cells{1,f}(b,1),f) = 1; % No. of Active bouts 
+        parameter_time{8}(wake_cells{1,f}(b,1):wake_cells{1,f}(b,2),f) = 1; % Total Time Active  
+        parameter_time{9}(wake_cells{1,f}(b,1):wake_cells{1,f}(b,2),f) = ...
+            nansum(wake_cells{1,f}(1:b,6)); % Total Activity
+    end
+    
+    % Inactive Bouts 
+    for b = 1:size(sleep_cells{1,f},1) % For each sleep bout
+        if isnan(sleep_cells{1,f}(b,3)) == 0 % check it's not a "hand artefact"
+            parameter_time{10}(sleep_cells{1,f}(b,1),f) = ...
+                sleep_cells{1,f}(b,3); % Fill in bout length
+            parameter_time{11}(sleep_cells{1,f}(b,1),f) = 1; % No. of Inactive Bouts
+            parameter_time{12}(sleep_cells{1,f}(b,1):sleep_cells{1,f}(b,2),f) = 1; % Total Time Inactive
+        end
+    end
+    
+    disp(horzcat('Calculated parameters across time for fish = ',num2str(f),...
+    ' of ',num2str(size(delta_px_sq,2)))); % Report progress 
+end
+
+toc
+clear b delta_px_sq_scrap f p   
+
+%% Statistics & Plots - Variables
+
+% Determine day/night order
+    % Note that dn currently assumes the experiment starts during the day
+lb = [1 ; lb]; % Add 1 to lb
+if dn(1) == 1 % If the experiment starts in the day 
+    lb_days = lb(1:2:size(lb,1)); % Assign day start values (in frames) 
+    lb_nights = lb(2:2:size(lb,1)); % Assign night start values (in frames) 
+    days_crop = 1:2:size(lb,1); nights_crop = 2:2:size(lb,1); 
+            % Assign logical indicies  
+else
+    lb_days = lb(2:2:size(lb,1)); % Assign day start values (in frames) 
+    lb_nights = lb(1:2:size(lb,1)); % Assign night start values (in frames) 
+    days_crop = 2:2:size(lb,1); nights_crop = 1:2:size(lb,1); 
+            % Assign logical indicies  
+end 
+
+% Determine which windows are of interest 
+time_window(1) = min([days_crop(days) nights_crop(nights)]);  
+time_window(2) = max([days_crop(days) nights_crop(nights)]); 
+
+% Determine first night  
+if min(days_crop(days)) < min(nights_crop(nights))
+    first_night = 2; 
+else 
+    first_night = 1; 
+end
+
+% Colours 
+cmap_2 = lbmap(max(group_tags)*2,col); % Generate a 2x color map
+cmap = cmap_2(1:2:size(cmap_2,1),:); % Extract main colors
+
+% Group sizes 
+for g = 1:max(group_tags) % For each group 
+    group_sizes(g) = size(find(group_tags == g),1); 
+end 
+
+clear g
+%% Parameters - Generating Averages (in frames) 
+parameter_matrix = nan(size(wake_cells,2),size(parameters,2),...
+    size(lb,1)); % Fish x parameters x time windows
+parameter_indicies = cell(2,size(wake_cells,2)); % wake/sleep x fish
+lb = [lb ; size(delta_px_sq,1)]; % Add end to lb
+
+for f = 1:size(wake_cells,2) % For each fish
+    for t = 1:size(parameter_matrix,3) % For each time window
+        % Wake bouts
+        clear time_start time_stop;
+        % Find the first bout that starts within the window
+        time_start = find(wake_cells{1,f}(:,1) >= lb(t),1,'first');
+        % Find the last bout that starts within the window
+        if t+1 < size(lb,1) % For most windows
+            time_stop = find(wake_cells{1,f}(:,1) < lb(t+1),1,'last');
+        else % For the last window
+            time_stop = find(wake_cells{1,f}(:,1) <= lb(t+1),1,'last');
+        end
+        
+        % Store logical index
+        parameter_indicies{1,f} = [parameter_indicies{1,f} ; ...
+            ones(size(time_start:time_stop,2),1)*t];
+        
+        % Extract bout parameters (1-6)
+        parameter_matrix(f,1:(size(wake_cells{1,f},2)-2),t)...
+            = nanmean(wake_cells{1,f}(time_start:time_stop,3:end)); % Means
+        % Number of bouts (7)
+        parameter_matrix(f,7,t) = size(wake_cells{1,f}...
+            (time_start:time_stop,3:end),1);
+        % Total time active (8) - sum of lengths
+        parameter_matrix(f,8,t) = nansum(wake_cells{1,f}...
+            (time_start:time_stop,3),1);
+        % Total activity (9) - sum of activity
+        parameter_matrix(f,9,t) = nansum(wake_cells{1,f}...
+            (time_start:time_stop,6),1);
+        
+        % sleep bouts (10-12)
+        clear time_start time_stop;
+        % Find the first bout that starts within the window
+        time_start = find(sleep_cells{1,f}(:,1) >= lb(t),1,'first');
+        % Find the last bout that starts within the window
+        if t+1 < size(lb,1) % For most windows
+            time_stop = find(sleep_cells{1,f}(:,1) < lb(t+1),1,'last');
+        else % For the last window
+            time_stop = find(sleep_cells{1,f}(:,1) <= lb(t+1),1,'last');
+        end
+        
+        % Store logical index
+        parameter_indicies{2,f} = [parameter_indicies{2,f} ; ...
+            ones(size(time_start:time_stop,2),1)*t];
+        
+        % Sleep Bout Length (10)
+        parameter_matrix(f,10,t)...
+            = nanmean(sleep_cells{1,f}(time_start:time_stop,3));
+        % Number of bouts (11)
+            % Subtract number of NaN's (H20 Top up)
+        parameter_matrix(f,11,t) = size(sleep_cells{1,f}...
+            (time_start:time_stop,3:end),1)... 
+            - sum(isnan(sleep_cells{1,f}(time_start:time_stop,3))); 
+        % Total time inactive (12) - sum of lengths
+        parameter_matrix(f,12,t) = nansum(sleep_cells{1,f}...
+            (time_start:time_stop,3),1);
+        
+    end
+end
+
+% Re-group data for ease of comparisons
+parameter_comparisons = cell(1,size(parameters,2)); % Pre-allocate
+for p = 1:size(parameter_comparisons,2) % For each parameter
+    parameter_comparisons{p}(1:max(group_sizes),1:max(group_tags),...
+        1:size(parameter_matrix,3)) = NaN; % {parameters} Most fish per group x
+    % x each group x time windows
+end
+
+for p = 1:size(parameter_comparisons,2) % For each parameter
+    for g = 1:max(group_tags) % For each group
+        for t = 1:size(parameter_matrix,3) % For each time window
+            parameter_comparisons{p}(1:group_sizes(g),g,t) = ...
+                parameter_matrix(group_tags == g,p,t);
+        end
+    end
+end
+
+clear f t time_start time_stop p g
+%% Smoothing data into seconds
+% Pre-allocate
+delta_px_sq_sec = nan(size(1:(fps):size(delta_px_sq,1),2),...
+    size(delta_px_sq,2),'single'); % time (seconds) x fish
+delta_px_sq_sec_smooth = nan(size(1:(fps):size(delta_px_sq,1),2),...
+    size(delta_px_sq,2),'single'); % time (seconds) x fish
+dn_sec = nan(size(1:(fps):size(delta_px_sq,1),2),1,'single'); % time x 1
+for p = 1:size(parameters,2) % For each parameter
+    parameter_time_sec_smooth{p} = nan(size(delta_px_sq_sec_smooth),'single');
+    % {parameters} time (seconds) x fish
+end
+
+% Smooth each fish's activity & parameters
+for f = 1:size(delta_px_sq,2) % For each fish
+    
+    a = 1; % Start a counter
+    for t = 1:(fps):size(delta_px_sq,1) % For each second
+        if t + (fps-1) < size(delta_px_sq,1) % Check to prevent running off the end
+            delta_px_sq_sec(a,f) = nansum(delta_px_sq(t:t+(fps-1),f)); % Bin activity
+            
+            for p = 1:size(parameters,2) % For each parameter
+                if parameter_smooth(p) == 0 % For most parameters
+                    parameter_time_sec_smooth{p}(a,f) = ...
+                        nanmean(parameter_time{p}(t:t+(fps-1),f)); % Mean
+                elseif parameter_smooth(p) == 1
+                    parameter_time_sec_smooth{p}(a,f) = ...
+                        nansum(parameter_time{p}(t:t+(fps-1),f)); % Sum
+                elseif parameter_smooth(p) == 2
+                    parameter_time_sec_smooth{p}(a,f) = ...
+                        nanmax(parameter_time{p}(t:t+(fps-1),f)); % Max
+                end
+            end
+            
+            if f == 1 % For the first fish
+                dn_sec(a,1) = mode(dn(t:t+(fps-1),1));
+                % Take the most common light value within each bin
+                % Will need to create indicies for each time window here
+                % (04.08.17)
+            end
+        
+        a = a + 1; % Add to counter
+        
+        else 
+            delta_px_sq_sec(a,f) = 0; % This prevents smoothing errors
+            dn_sec(a,1) = dn_sec(a-1,1); % Assume last value 
+        end
+        
+    end
+    
+    % Smooth the activity data
+    delta_px_sq_sec_smooth(:,f) = smooth(delta_px_sq_sec(:,f),time_bins);
+    disp(horzcat('Smoothed fish ',num2str(f),' of ' ,...
+        num2str(size(delta_px_sq,2)))); % Report progress
+end
+
+% Determine Day/Night Transitions in seconds
+% Note that the binning will make this not 100% accurate
+lb_sec = [1 ; find(diff(dn_sec) ~= 0) + 1; size(delta_px_sq_sec_smooth,1)];
+
+clear a f p t 
+%% Save WorkSpace 
+
+save(strcat(save_pathname,'/',save_name,'.mat'),'-v7.3'); % save data  % ! FK changed \ to /
+##### SOURCE END #####
+--></body></html>

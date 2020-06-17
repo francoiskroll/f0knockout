@@ -17,9 +17,7 @@ can be found at the Zenodo version of this repository:
 
 https://doi.org/10.5281/zenodo.3898916 <br />
 
-
-
-## Two-photon head stack
+## two-photon head stack
 
 Original stack from two-photon microscope is *headstack_original.tif*.
 
@@ -76,7 +74,7 @@ zinc: 2 <br />
 LaserPower (lambda deg): 38.00 <br />
 ScanType: F <br />
 
-## Two-photon eye stack
+## two-photon eye stack
 
 Original stack from two-photon microscope is *eyestack_original.tif*.
 

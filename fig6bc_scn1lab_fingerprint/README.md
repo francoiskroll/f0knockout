@@ -9,6 +9,15 @@ https://doi.org/10.1101/2020.06.04.133462
 
 ___
 
+Files <br />
+* *140218_34_DATA.mat*
+* *190813_06_DATA.mat*
+* *190813_07_DATA.mat*
+
+can be found at the Zenodo version of this repository (too heavy for GitHub):
+
+https://doi.org/10.5281/zenodo.3898916
+
 Main script is MATLAB script `Vp_Analyse_fingerprint.m`, which takes three mat files as input (in that order):
 * *140218_34_DATA.mat* (same as in folder **scn1lab_stable**)
 * *190813_06_DATA.mat* (same as in folder **scn1lab_f0**)

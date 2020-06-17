@@ -9,6 +9,14 @@ https://doi.org/10.1101/2020.06.04.133462
 
 ___
 
+Files <br />
+* *trpa1b_ifsomewts_SampleSize_100fish10sim.RData*
+* *csnk1db_ifsomewts_SampleSize_100fish10sim.RData*
+
+can be found at the Zenodo version of this repository (too heavy for GitHub):
+
+https://doi.org/10.5281/zenodo.3898916
+
 ## Simulations for *trpa1b*: mustard oil response
 
 Files in folder **trpa1b_simulation**.

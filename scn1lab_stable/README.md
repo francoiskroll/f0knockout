@@ -5,7 +5,7 @@ Refers to Figure 6A right.
 ___
 
 Please cite the preprint if you use some of the data or code! <br />
-https://doi.org/10.1101/2020.06.04.133462
+https://www.biorxiv.org/content/10.1101/2020.06.04.133462v3
 
 ___
 
@@ -16,7 +16,7 @@ Files <br />
 
 can be found at the Zenodo version of this repository (too heavy for GitHub):
 
-https://doi.org/10.5281/zenodo.3898916
+https://doi.org/10.5281/zenodo.3900611
 
 Analysis follows the same steps as README in folder *scn1lab_f0*.
 

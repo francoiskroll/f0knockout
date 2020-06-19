@@ -5,7 +5,7 @@ Refers to Figure 7B.
 ___
 
 Please cite the preprint if you use some of the data or code! <br />
-https://www.biorxiv.org/content/10.1101/2020.06.04.133462v3
+https://doi.org/10.1101/2020.06.04.133462
 
 ___
 

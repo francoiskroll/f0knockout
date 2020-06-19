@@ -5,7 +5,7 @@ Refers to Figure 6B,C
 ___
 
 Please cite the preprint if you use some of the data or code! <br />
-https://www.biorxiv.org/content/10.1101/2020.06.04.133462v3
+https://doi.org/10.1101/2020.06.04.133462
 
 ___
 
@@ -16,7 +16,7 @@ Files <br />
 
 can be found at the Zenodo version of this repository (too heavy for GitHub):
 
-https://doi.org/10.5281/zenodo.3900611
+https://doi.org/10.5281/zenodo.3898915
 
 Main script is MATLAB script `Vp_Analyse_fingerprint.m`, which takes three mat files as input (in that order):
 * *140218_34_DATA.mat* (same as in folder **scn1lab_stable**)

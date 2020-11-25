@@ -11,7 +11,7 @@ Ghosh M, Rihel J. 2020. Hierarchical Compression Reveals Sub-Second to Day-Long 
 
 ___
 
-Feel free to get in touch for questions
+Get in touch for questions
 
   * [![alt text][1.2]][1] [@francois_kroll](https://twitter.com/francois_kroll)
 

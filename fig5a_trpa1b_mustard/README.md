@@ -4,8 +4,7 @@ Refers to Figure 5A.
 
 ___
 
-Please cite the preprint if you use some of the data or code! <br />
-https://doi.org/10.1101/2020.06.04.133462
+Please cite if you use some of the data or code! <br />
 
 ___
 
@@ -35,7 +34,7 @@ The genotype file + xls files are input into MATLAB script `VpExtract_ErrorHandl
 
 ---
 
-Feel free to get in touch for questions
+Get in touch for questions
 
   * [![alt text][1.2]][1] [@francois_kroll](https://twitter.com/francois_kroll)
 

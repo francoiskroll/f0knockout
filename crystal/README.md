@@ -2,7 +2,7 @@
 
 Refers to Figure 4C, Video 1, Video 2.
 
-## Two-photon head stack
+## Two-photon head stack
 
 Original stack from two-photon microscope is *headstack_original.tif*.
 

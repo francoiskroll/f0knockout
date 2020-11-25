@@ -20,7 +20,7 @@ get_upper_tri <- function(cormat){
 
 # import ------------------------------------------------------------------
 
-myfile <- '~/Dropbox/phd/septMiSeq/septMiSeq_amplican/events_histo/events_all_unfolded.csv'
+myfile <- '~/.../MiSeq/events/events_all_unfolded.csv'
 alluf0 <- read.csv (myfile)
 
 # remove some rows --------------------------------------------------------
@@ -28,6 +28,16 @@ rows2remove <- c()
 
 # remove control samples
 rows2remove <- c(rows2remove, which(alluf0$fish == 0))
+
+# remove slc24a5 AC samples
+rows2remove <- c(rows2remove, which(alluf0$locus == 'slc24a5_AC'))
+
+# remove negative strand
+(nrow(subset(alluf0, strand=='-')) / nrow(subset(alluf0, strand=='+'))) * 100 # very few mutations are on negative strand
+# and seem to be duplicated on the positive strand
+# not sure what they represent;
+# I think safer to delete mutations called on negative strand
+rows2remove <- c(rows2remove, which(alluf0$strand == '-'))
 
 rows2remove <- unique(rows2remove)
 length(rows2remove)
@@ -37,7 +47,11 @@ alluf <- alluf0[- rows2remove ,]
 
 # off-targets, low-coverage, consensus FALSE, mismatch all removed already
 
-# frequency/probability of each indel length/width for each sample -------------------------------------------
+# create composite ID column ---------------------------------------------
+# i.e. one ID per mutation
+alluf$mutID <- paste(alluf$start, alluf$end, alluf$width, alluf$originally, alluf$replacement, alluf$type, sep='_')
+
+# frequency/probability of each indel for each sample -------------------------------------------
 
 # will store each dataframe in a list
 # so length of the list will be number of samples
@@ -49,36 +63,35 @@ for (spl in unique(alluf$seqnames)) {
   
   alluf_spl <- alluf[which(alluf$seqnames==spl),] # take the subset of alluf regarding that sample
   
-  ppw <- aggregate(alluf_spl$width, by=list(alluf_spl$width), FUN=length)
-  colnames(ppw) <- c('width', 'count')
+  ppw <- aggregate(alluf_spl$mutID, by=list(alluf_spl$mutID), FUN=length)
+  colnames(ppw) <- c('mutID', 'count')
   ppw$prob <- ppw$count / sum(ppw$count)
   if (round(sum(ppw$prob), 6) != 1) stop(cat('total probability for sample', spl, 'is not 1')) 
   # need to round, sometimes weird thing because of how it stores numbers
-  ppw$deletion <- is.negative(ppw$width)
   
   ppw_all[[spl]] <- ppw
   
 }
 
-# pick top10 lengths per sample -----------------------------------
+# pick top10 mutation per sample -----------------------------------
 
 # loop thru the list
-# pick the top 10 lengths/widths based on P
+# pick the top 10 mutation ID based on P
 # store them in a df sample x top1-10
 
 # first for one element of the list
 
 topn <- 10
 
-topall <- as.data.frame(matrix(nrow=length(ppw_all), ncol=4+topn)) # 4 metadata about sample + n top widths
+topall <- as.data.frame(matrix(nrow=length(ppw_all), ncol=4+topn)) # 4 metadata about sample + n top indels
 
 for (spln in 1:length(ppw_all)) { # for sample n
   ppw <-  ppw_all[[spln]] # take the dataframe at that position
-  ppw <- ppw[order(ppw$prob, decreasing=TRUE),] # sort the widths based on probabilities (or counts, would do the same ranking)
-  topnw <- ppw[1:topn,1] # top n widths
+  ppw <- ppw[order(ppw$prob, decreasing=TRUE),] # sort the mutation IDs based on probabilities (or counts, would do the same ranking)
+  topnw <- ppw[1:topn,1] # top n mutation ID
   meta <- alluf[which(alluf$seqnames == names(ppw_all)[spln])[1], 1:4] # take the metada of that sample
   meta <- c( as.character(unlist(meta[1:2])) , as.integer(unlist(meta[3])),  as.character(unlist(meta[4])) ) # dirty fix to conversion problem
-  rowtopnw <- c(meta, topnw) # stick the row together: metadata + top n widths
+  rowtopnw <- c(meta, topnw) # stick the row together: metadata + top n mutation ID
   
   topall[spln,] <- rowtopnw # adding that row to the dataframe
 }
@@ -86,40 +99,37 @@ for (spln in 1:length(ppw_all)) { # for sample n
 colnames(topall) <- c('gene', 'locus', 'fish', 'seqnames', sprintf('top%s', 1:topn))
 
 # improve formats, helps after
-
-topall[5:(5+topn-1)] <- apply(topall[5:(5+topn-1)], 2, as.numeric)
+topall[5:(5+topn-1)] <- apply(topall[5:(5+topn-1)], 2, as.character)
 
 # pairwise intersects -------------------------------------------------------------
 
-# NA (when less than n widths in total) would affect a bit the comparisons...
+# NA (when less than n indels in total) would affect a bit the comparisons...
 
 # how many samples have less than 10 variants total
-length( which( (rowSums(!is.na(topall)) - 4) < 10 )) # 19 samples have less than 10 variants
-# i.e. 15% of the samples
-length( which( (rowSums(!is.na(topall)) - 4) < 5 )) # 5 samples have less than 5 variants
+length( which( (rowSums(!is.na(topall)) - 4) < 10 )) # 8 samples have less than 10 variants
+length( which( (rowSums(!is.na(topall)) - 4) < 5 )) # 2 samples have less than 5 variants
 
-
-# remove samples with less than topn widths ------------------------------
+# remove samples with less than topn indels ------------------------------
 topall <- topall [ - which(apply(topall[5:(5+topn-1)], 1, function(x) sum(is.na(x))) > 0) , ]
 # inside gives the number of NA per row; then which one have more than 0 NA
 
 # check
-nrow(topall) # 107 samples = 126 - 19; ok
+nrow(topall) # 114 samples = 122 - 8; ok
 
 
 # pairwise comparisons between samples
 
 # eg. for just two rows
-length(intersect(as.numeric(topall[1,5:(5+topn-1)]) , as.numeric(topall[2,5:(5+topn-1)])))
+length(intersect(as.character(topall[1,5:(5+topn-1)]) , as.character(topall[2,5:(5+topn-1)])))
 
 # pairwise comparison > store how many wifths are same
 topallpw <- as.data.frame(matrix(nrow=nrow(topall), ncol=(nrow(topall)))) # preallocate topall pairwise
 
 for (i in 1:nrow(topall)) { # will loop thru rows of topall
-  rowi <- as.numeric(topall[i, 5:(5+topn-1)]) # take the top10 widths
+  rowi <- as.character(topall[i, 5:(5+topn-1)]) # take the top10 indels
   
   for (j in 1:nrow(topall)) { # will loop again thru rows of topall to find intersects
-    rowj <- as.numeric(topall[j, 5:(5+topn-1)])
+    rowj <- as.character(topall[j, 5:(5+topn-1)])
     topallpw[i, j] <- length(intersect(rowi, rowj))
   }
 }
@@ -138,7 +148,7 @@ topallpw <- tbl_df(topallpw)
 
 topallpwm <- topallpw %>% 
   pivot_longer(-sample, names_to='v_sample', values_to='int')
-# result is three columns: sample; versus sample; number of common widths within top10
+# result is three columns: sample; versus sample; number of common indels within top10
 
 # check
 nrow(topallpw) * (ncol(topallpw) - 1) == nrow(topallpwm) # expected number of rows
@@ -157,8 +167,6 @@ topallpwm$locus <- sub('_([^_]*)$', '', topallpwm$sample)
 topallpwm$v_locus <- sub('_([^_]*)$', '', topallpwm$v_sample)
 
 topallpwm <- topallpwm[, c(1, 4, 2, 5, 3)]
-
-# can add more metadata later (copy code from allevents_histo.R), but this is sufficient for what I want to do now
 
 # add a column for the type of comparison
 topallpwm$compar <- NA
@@ -220,7 +228,7 @@ compardot <- ggplot(topallpwm_jit[topallpwm_jit$sample!=topallpwm_jit$v_sample ,
   scale_y_continuous(breaks=0:10) +
   scale_x_discrete(labels=c('different locus', 'same locus')) +
   coord_cartesian(ylim=c(0, 10)) +
-  ylab('number of indel lengths in common')
+  ylab('number of indels in common')
 compardot
 
 # summary stat ------------------------------------------------------------
@@ -240,4 +248,4 @@ t.test(int ~ compar, data = topallpwm[topallpwm$sample!=topallpwm$v_sample ,])
 # export ------------------------------------------------------------------
 
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-ggsave (filename='f0_top10widths.pdf', plot=compardot, width=90, height=60, units='mm', useDingbats=FALSE)
+ggsave (filename='f0_top10indel.pdf', plot=compardot, width=90, height=60, units='mm', useDingbats=FALSE)

@@ -2,20 +2,11 @@
 
 ___
 
-Please cite the preprint if you use some of the data or code! <br />
-https://doi.org/10.1101/2020.06.04.133462
+Please cite if you use some of the data or code! <br />
 
 ___
 
-Folders <br />
-* **amplican_runs**
-* **fastarefs**
-
-can be found at the Zenodo version of this repository (too heavy for GitHub):
-
-https://doi.org/10.5281/zenodo.3898915
-
-## Files included
+## Files included
 
 In *amplican_runs*, there is one folder per ampliCan run: *crystal* (i.e. *slc45a2* + *mitfa* + *mpv17*);  *csnk1db*; *off* (for *slc24a5* off-targets); etc.
 
@@ -125,7 +116,7 @@ Also in `MiSeq_frameshiftstack.R` are computed different summary statistics repo
 
 ### Figure 1E,F and Figure 2D: proportion of frameshift alleles
 
-Script `biallelicpropability.R`, which takes *MiSeq_amplicanresults.xlsx* as input.
+Script `biallelicprobability.R`, which takes *MiSeq_amplicanresults.xlsx* as input.
 
 ### Figure 2F: off-targets
 
@@ -151,6 +142,10 @@ For Figure 2B: script `howSimilarDifferentSamples.R`, which takes *events_all_un
 
 Script `allevents_histo.R`, which takes *events_all.csv* as input.
 
+### Figure 2—figure supplement 1: positions of deleted nucleotides
+
+Script `deletionPos.R`, which takes *events_all.csv* as input.
+
 ### Main text: diversity in null alleles
 
 Script `quantifyDiversity.R`, which takes *events_all_unfolded.csv* as input.
@@ -159,9 +154,13 @@ Also in `MiSeq_frameshiftstack.R` are computed different summary statistics repo
 * Proportion of alleles with a frameshift mutation when targeting three loci.
 * How much this proportion increased when targeting a fourth locus (for *slc24a5* and *tyr*)
 
+### Author response figure 1
+
+Also script `quantifyDiversity.R`, which takes *events_all_unfolded.csv* as input.
+
 ---
 
-Feel free to get in touch for questions
+Get in touch for questions
 
   * [![alt text][1.2]][1] [@francois_kroll](https://twitter.com/francois_kroll)
 

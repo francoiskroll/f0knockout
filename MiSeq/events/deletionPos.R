@@ -1,8 +1,11 @@
 # septMiSeq amplican: all events/histogram
 
+# first ~ 85 rows are pasted from allevents_histo.R
+
 library (ggplot2)
 library (reshape2)
 library (schoolmath)
+library(dplyr)
 
 all.neg <- function(x) -1*abs(x)
 # from https://stackoverflow.com/questions/51178646/assign-a-negative-sign-to-every-value-in-a-vector-in-r;
@@ -10,7 +13,7 @@ all.neg <- function(x) -1*abs(x)
 
 # import ------------------------------------------------------------------
 
-myfile <- '~/Dropbox/phd/septMiSeq/septMiSeq_amplican/events_histo/events_all.csv'
+myfile <- '~/.../events_all.csv'
 allevents0 <- read.csv (myfile)
 
 
@@ -84,64 +87,72 @@ nrow(duplicates)
 uni <- allevents[-which(dups),]
 nrow(uni)
 
-# by the way: same as when starting from unfolded (quantifyDiversity.R), which is a good sign
+# keep only deletions -----------------------------------------------------
+unidel <- subset(uni, type=='deletion')
 
-# in vs del ratio --------------------------------------------------------------
+# prepare position deleted vector -----------------------------------------
 
-length(which(uni$type=='insertion'))
-length(which(uni$type=='deletion'))
-length(which(uni$type=='insertion')) / nrow(uni)
-length(which(uni$type=='deletion')) / nrow(uni)
+# idea is: pre-allocate a vector of length 401 (from -200 to 200) with all 0
+# then loop through each deletion (each row of unidel)
+# and add +1 to each deleted position
 
-# if del >> width should be negative ---------------------------------------
+# pre-allocate
+posdel <- rep(0, length(-200:200))
 
-uni$width[which(uni$type=='deletion')] <- all.neg(uni$width[which(uni$type=='deletion')])
+# ! element 201 corresponds to position 0
+# i.e. need to do + 201 to any position to match it to the vector
 
-# collapse into counts per width ----------------------------------------------
+# loop through each deletion (each row in unidel)
+for (de in 1:nrow(unidel)){
+  delb <- unidel[de,c('start')] : unidel[de,c('end')] # deleted bases
+  posdel[delb+201] <- posdel[delb+201]+1
+}
 
-countsperwidth <-aggregate(uni$width, by=list(uni$width), FUN=length)
-colnames(countsperwidth) <- c('width', 'count')
+# put it nicely in a dataframe
+posDel <- as.data.frame(matrix(nrow=length(posdel), ncol=2))
+colnames(posDel) <- c('pos', 'ndel') # position / number of times deleted
+posDel$pos <- -200:200
+posDel$ndel <- posdel
 
-# looks correct, tests below
-length(which(uni$width==1))
-length(which(uni$width==2))
+# better Y axis: normalised in frequency deleted
+posDel$freq <- posDel$ndel / nrow(unidel)
 
-# add back type, based on sign
-uni[is.negative(countsperwidth$width),]
+# plot --------------------------------------------------------------------
 
+posDel[which.max(posDel$ndel),] # peak is at -4
 
-# convert counts to probability ---------------------------------------------
-# probability as = proportion of the dataset
-countsperwidth$prob <- countsperwidth$count / sum(countsperwidth$count)
+mycols <- '#83939f'
 
-# add deletion or insertion column ----------------------------------------
-# will use it for colours
-countsperwidth$deletion <- is.negative(countsperwidth$width)
-
-# width vs freq histo -----------------------------------------------------
-
-mycols <- c('#83939f', '#5a6974')
-
-freqvwidth <- ggplot (data=countsperwidth, aes (x=width, y=prob, fill=deletion)) +
-  geom_bar(stat='identity', width=0.7) +
-  scale_fill_manual(values=mycols) +
-  theme_minimal() +
+posdelPlot <- ggplot(posDel, aes(x=pos, y=freq)) +
+  geom_bar(stat='identity', width=0.8, fill=mycols) +
+  coord_cartesian(xlim=c(-50, 50)) +
+  theme_minimal() + 
   theme(
     # grid
     panel.grid.minor.x=element_blank(),
     panel.grid.minor.y=element_blank(),
     # axis text
-    axis.title.x=element_text(size=9, margin = margin(t = 2, r = 0, b = 0, l = 0)),
+    axis.title.x=element_blank(),
     axis.title.y=element_text(size=9, margin = margin(t = 0, r = 2, b = 0, l = 0)),
-    axis.text.x = element_text(size=7),
+    axis.text.x = element_blank(),
     axis.text.y = element_text(size=7),
     legend.position='none'
   ) +
-  coord_cartesian(xlim=c(-50, 50)) +
-  xlab('indel length (bp)') + ylab('frequency')
-freqvwidth
+  ylab('frequency of deletion')
+posdelPlot
+
+# note --------------------------------------------------------------------
+
+# positions are given based on the PAM
+
+# example slc24a5_AD, binding site is on negative strand
+tmp <- subset(unidel, seqnames=='slc24a5_AD_2')
+tmp[order(-tmp$counts),]
+# and look in parallel at id_report.html Variants plot for slc24a5_AD_2
+# 1- deleted nucleotides are included in positions
+# 2- if gRNA binding site is on -: everything is inverted (which in practice means only the sign of the positions are changed)
+# inverted; i.e. read Variants plot from right to left to read from 5' to 3'
 
 # export ------------------------------------------------------------------
-
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-ggsave('f0_freqvwidth.pdf', plot=freqvwidth, width=90, height=60, unit='mm', useDingbats=FALSE) # f0 paper
+ggsave('f0_posdel.pdf', plot=posdelPlot, width=110, height=60, unit='mm', useDingbats=FALSE) # f0 paper

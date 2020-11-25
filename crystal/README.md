@@ -1,23 +1,8 @@
 # *crystal* fish imaging
 
-___
-
-Please cite the preprint if you use some of the data or code! <br />
-https://doi.org/10.1101/2020.06.04.133462
-
-___
-
 Refers to Figure 4C, Video 1, Video 2.
 
-Files <br />
-* *eyestack_original.tif*
-* *headstack_original.tif* <br />
-
-can be found at the Zenodo version of this repository:
-
-https://doi.org/10.5281/zenodo.3898915
-
-## two-photon head stack
+## Two-photon head stack
 
 Original stack from two-photon microscope is *headstack_original.tif*.
 
@@ -28,7 +13,7 @@ Original stack from two-photon microscope is *headstack_original.tif*.
 
     ffmpeg -i headstack_jpeg.avi headstack_jpeg.mp4
 
-- Added annotations etc in Adobe Premiere Pro.
+- Added annotations etc. in Adobe Premiere Pro.
 
 Figure 4C: image is Z maximum projection of slice 95 to 105 (file included).
 
@@ -74,7 +59,7 @@ zinc: 2 <br />
 LaserPower (lambda deg): 38.00 <br />
 ScanType: F <br />
 
-## two-photon eye stack
+## Two-photon eye stack
 
 Original stack from two-photon microscope is *eyestack_original.tif*.
 
@@ -124,7 +109,7 @@ ScanType: F <br />
 
 ---
 
-Feel free to get in touch for questions
+Get in touch for questions
 
   * [![alt text][1.2]][1] [@francois_kroll](https://twitter.com/francois_kroll)
 

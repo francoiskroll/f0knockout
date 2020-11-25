@@ -4,22 +4,9 @@ Refers to Figure 6A and Figure 6—figure supplement 1.
 
 ___
 
-Please cite the preprint if you use some of the data or code! <br />
-https://doi.org/10.1101/2020.06.04.133462
+Please cite if you use some of the data or code! <br />
 
 ___
-
-Files <br />
-* *190813_06_07.XLS*
-* *190813_06_07.zip*
-* *190813_06_DATA.mat*
-* *190813_06_deltapxsecsmooth.csv*
-* *190813_07_DATA.mat*
-* *190813_07_deltapxsecsmooth.csv <br />*
-
-can be found at the Zenodo version of this repository (too heavy for GitHub):
-
-https://doi.org/10.5281/zenodo.3900611
 
 See Materials and Methods/Behavioural data analysis.
 
@@ -49,7 +36,7 @@ Figure 6—figure supplement 1 (BOX6): `190819_traceByGenotype_BOX7.R` uses *190
 
 ---
 
-Feel free to get in touch for questions
+Get in touch for questions
 
   * [![alt text][1.2]][1] [@francois_kroll](https://twitter.com/francois_kroll)
 

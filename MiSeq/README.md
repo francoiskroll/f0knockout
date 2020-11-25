@@ -6,7 +6,7 @@ Please cite if you use some of the data or code! <br />
 
 ___
 
-## Files included
+## Files included
 
 In *amplican_runs*, there is one folder per ampliCan run: *crystal* (i.e. *slc45a2* + *mitfa* + *mpv17*);  *csnk1db*; *off* (for *slc24a5* off-targets); etc.
 

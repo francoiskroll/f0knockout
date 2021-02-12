@@ -94,7 +94,7 @@ colnames(dpxsum) <- c('grp', 'sec', 'mean', 'sd', 'sem', 'n')
 # plot --------------------------------------------------------------------
 # add light boundaries vertical lines
 dpxsum$grp <-  as.factor(dpxsum$grp)
-dpxsum$grp <- factor(dpxsum$grp, levels=c('WT_SCN1LAB', 'HET_SCN1LAB', 'HOM_SCN1LAB'))
+dpxsum$grp <- factor(dpxsum$grp, levels=c('wt', 'het', 'hom'))
 lbs <- as.numeric(lb[,1])
 mycols <- c('#697a87', '#b3bdc4', '#f1876b')
 

@@ -2,9 +2,11 @@
 
 Data and code for
 
-Kroll, F. _et al._ 2021. A simple and effective F0 knockout method for rapid screening of behaviour and other complex phenotypes.
+François Kroll, Gareth T Powell, Marcus Ghosh, Gaia Gestri, Paride Antinucci, Timothy J Hearn, Hande Tunbak, Sumi Lim, Harvey W Dennis, Joseph M Fernandez, David Whitmore, Elena Dreosti, Stephen W Wilson, Ellen J Hoffman, Jason Rihel. 2021
 
-https://elifesciences.org/articles/59683
+**A simple and effective F0 knockout method for rapid screening of behaviour and other complex phenotypes**
+
+https://doi.org/10.7554/eLife.59683
 
 If you use some of the data or code, please cite!
 
